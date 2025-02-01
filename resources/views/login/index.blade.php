@@ -27,8 +27,7 @@
           Sign In to TailAdmin
         </h2>
 
-        <form action="{{ route('login') }}" method="POST">
-          @csrf
+        <form>
           <div class="mb-4">
             <label class="mb-2.5 block font-medium text-black dark:text-white">Email</label>
             <div class="relative">
