@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('index');
+Route::prefix("admin")->middleware('auth')->group(function () {
+    Route::get('/', DashboardController::class)->name("dashboard");
 });
