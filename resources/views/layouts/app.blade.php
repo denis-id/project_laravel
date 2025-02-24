@@ -1,25 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="csrf-token" content="{{ csrf_token() }}" />
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>
     eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template
   </title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/2.2.1/css/dataTables.tailwindcss.css">
 </head>
 
 <body
-  x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+  x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
   x-init="
          darkMode = JSON.parse(localStorage.getItem('darkMode'));
          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
-  :class="{'dark text-bodydark bg-boxdark-2': darkMode === true, 'bg-gray-100' : darkMode == false}">
+  :class="{'dark bg-gray-900': darkMode === true}">
   <!-- ===== Preloader Start ===== -->
   @include('partials.preloader')
   <!-- ===== Preloader End ===== -->
@@ -31,14 +29,20 @@
     <!-- ===== Sidebar End ===== -->
 
     <!-- ===== Content Area Start ===== -->
-    <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+    <div class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
+      <!-- Small Device Overlay Start -->
+      @include('partials.overlay')
+      <!-- Small Device Overlay End -->
+
       <!-- ===== Header Start ===== -->
       @include('partials.header')
       <!-- ===== Header End ===== -->
 
       <!-- ===== Main Content Start ===== -->
       <main>
-        @yield('content')
+        <div class="p-4 mx-auto max-w-screen-2xl md:p-6">
+          @yield('content')
+        </div>
       </main>
       <!-- ===== Main Content End ===== -->
     </div>
