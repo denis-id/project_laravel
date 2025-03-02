@@ -18,10 +18,8 @@
                         <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Price</th>
                         <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Size</th>
                         <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Active</th>
-                        <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Category
-                        </th>
-                        <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Actions
-                        </th>
+                        <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Category</th>
+                        <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,7 +33,7 @@
                             <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
                                 {{ $product->name }}</td>
                             <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
-                                ${{ number_format($product->price, 2) }}</td>
+                                Rp{{ number_format($product->price, 2, ',', '.') }}</td>
                             <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
                                 {{ $product->variant->size ?? 'No Size' }}</td>
                             <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
@@ -43,7 +41,15 @@
                             <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
                                 {{ $product->category->name ?? 'No Category' }}</td>
                             <td class="px-4 py-2 text-sm">
-
+                                <a href="{{ route('products.edit', $product->id) }}"
+                                    class="text-blue-500 hover:underline">Edit</a>
+                                <form action="{{ route('products.destroy', $product->id) }}" method="POST"
+                                    style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:underline"
+                                        onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach

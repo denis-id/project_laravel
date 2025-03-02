@@ -179,14 +179,6 @@
 
 @section('scripts')
     <script>
-        function formatRupiah(input) {
-            let value = input.value.replace(/[^0-9]/g, '');
-            let formatted = new Intl.NumberFormat('id-ID').format(value);
-            input.value = formatted;
-        }
-    </script>
-
-    <script>
         $(document).ready(function() {
             const token = document.head.querySelector('meta[name="csrf-token"]').content;
             const variants = [];
