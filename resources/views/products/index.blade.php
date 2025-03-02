@@ -37,21 +37,13 @@
                             <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
                                 ${{ number_format($product->price, 2) }}</td>
                             <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
-                                {{ $product->size }}</td>
+                                {{ $product->variant->size ?? 'No Size' }}</td>
                             <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
                                 {{ $product->is_active ? 'Yes' : 'No' }}</td>
                             <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
                                 {{ $product->category->name ?? 'No Category' }}</td>
                             <td class="px-4 py-2 text-sm">
-                                <form method="POST" class="btn-product-delete"
-                                    action="{{ route('products.destroy', ['product' => $product->id]) }}">
-                                    <a href="{{ route('products.edit', $product->id) }}"
-                                        class="text-blue-600 hover:text-blue-800">Edit</a>
-                                    •
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800">Delete</button>
-                                </form>
+
                             </td>
                         </tr>
                     @endforeach
