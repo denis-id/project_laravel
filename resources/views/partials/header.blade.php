@@ -351,7 +351,7 @@
             <img src="./images/user/owner.jpg" alt="User" />
           </span>
 
-          <span class="block mr-1 font-medium text-theme-sm"> Musharof </span>
+          <span class="block mr-1 font-medium text-theme-sm"> Denis </span>
 
           <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400" width="18" height="20"
             viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -365,10 +365,10 @@
           class="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
           <div>
             <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-              Musharof Chowdhury
+              Denis Arya Buana
             </span>
             <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-              randomuser@pimjo.com
+              denisryana2012@gmail.com
             </span>
           </div>
 

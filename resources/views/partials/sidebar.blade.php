@@ -6,11 +6,11 @@
     class="sidebar-header flex items-center gap-2 pb-7 pt-8">
     <a href="index.html">
       <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
-        <img class="dark:hidden" src="./images/logo/logo.svg" alt="Logo" />
-        <img class="hidden dark:block" src="./images/logo/logo-dark.svg" alt="Logo" />
+        <img class="dark:hidden" src="{{ asset('images/logo/KOHI.png') }} alt="Logo" />
+        <img class="hidden dark:block" src="{{ asset('images/logo/KOHI.png') }} alt="Logo" />
       </span>
 
-      <img class="logo-icon" :class="sidebarToggle ? 'lg:block' : 'hidden'" src="./images/logo/logo-icon.svg"
+      <img class="logo-icon" :class="sidebarToggle ? 'lg:block' : 'hidden'" src="./images/logo/KOHI.png"
         alt="Logo" />
     </a>
   </div>
@@ -38,26 +38,45 @@
               <svg class="menu-item-arrow"
                 :class="[(selected === 'Dashboard') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : '' ]"
                 width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
-                  stroke-linecap="round" stroke-linejoin="round" />
+               
               </svg>
             </a>
           </li>
           <!-- Menu Item Dashboard -->
 
-          <!-- Menu Item Calendar -->
+          <!-- Menu Item category -->
           <li>
-            <a href="calendar.html" @click="selected = (selected === 'Calendar' ? '':'Calendar')"
-              class="menu-item group"
-              :class=" (selected === 'Calendar') && (page === 'calendar') ? 'menu-item-active' : 'menu-item-inactive'">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-bar-stacked"><path d="M11 13v4"/><path d="M15 5v4"/><path d="M3 3v16a2 2 0 0 0 2 2h16"/><rect x="7" y="13" width="9" height="4" rx="1"/><rect x="7" y="5" width="12" height="4" rx="1"/></svg>
-
+            <a href="{{ route('categories.index') }}" @click="selected = (selected === 'Profile' ? '' : 'Profile')" class="menu-item group {{ request()->routeIs('categories.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-bar-stacked">
+                <path d="M11 13v4"/>
+                <path d="M15 5v4"/>
+                <path d="M3 3v16a2 2 0 0 0 2 2h16"/>
+                <rect x="7" y="13" width="9" height="4" rx="1"/>
+                <rect x="7" y="5" width="12" height="4" rx="1"/>
+            </svg>
               <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
                 Category
               </span>
             </a>
           </li>
-          <!-- Menu Item Calendar -->
+          <!-- Menu Item category -->
+
+                    <!-- Menu Item category -->
+                    <li>
+                      <a href="{{ route('products.index') }}" @click="selected = (selected === 'Profile' ? '' : 'Profile')" class="menu-item group {{ request()->routeIs('categories.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-bar-stacked">
+                          <path d="M11 13v4"/>
+                          <path d="M15 5v4"/>
+                          <path d="M3 3v16a2 2 0 0 0 2 2h16"/>
+                          <rect x="7" y="13" width="9" height="4" rx="1"/>
+                          <rect x="7" y="5" width="12" height="4" rx="1"/>
+                      </svg>
+                        <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                          Products
+                        </span>
+                      </a>
+                    </li>
+                    <!-- Menu Item category -->
 
           <!-- Menu Item Profile -->
           <li>

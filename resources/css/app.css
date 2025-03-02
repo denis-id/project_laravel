@@ -90,7 +90,20 @@
     -webkit-appearance: none;
   }
 }
-
+.c-btn{
+  border: none;
+  border-radius: 12px;
+  background: #4c00ff;
+  color: #fff;
+  padding: 10px 30px;
+  font-size: 1.2rem;
+}
+.h-btn:hover{
+  background: #0026ff2a;
+  color: #000000;
+  transform: translateY(-20px);
+  transition-duration: 1s;
+}
 .sidebar:hover {
   width: 290px;
 }
