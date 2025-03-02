@@ -28,8 +28,8 @@
                             <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                 Price
                             </label>
-                            <input type="number" id="price" placeholder="0" name="price"
-                                value="{{ number_format($product->price ?? old('price'), 0, ',', '.') }}"
+                            <input type="text" id="price" placeholder="Rp 0" name="price"
+                                value="{{ 'Rp ' . number_format($product->price ?? old('price'), 0, ',', '.') }}"
                                 class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                                 oninput="formatRupiah(this)">
                         </div>
@@ -176,6 +176,14 @@
     </div>
     </div>
 @endsection
+
+<script>
+    function formatRupiah(input) {
+        let value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+        let formatted = new Intl.NumberFormat('id-ID').format(value); // Format as Rupiah
+        input.value = value ? 'Rp ' + formatted : ''; // Add 'Rp' prefix
+    }
+</script>
 
 @section('scripts')
     <script>
