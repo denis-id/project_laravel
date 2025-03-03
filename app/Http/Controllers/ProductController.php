@@ -62,7 +62,7 @@ class ProductController extends Controller
                 foreach ($request->variants as $variant) {
                     $productVariant = new ProductVariant();
                     $productVariant->product_id = $product->id;
-                    $productVariant->variant_name = $request->variant_name;
+                    $productVariant->variant_name = $variant['variant_name'];
                     $productVariant->size = $variant['size'];
                     $productVariant->stock = $variant['stock'];
                     $productVariant->save();

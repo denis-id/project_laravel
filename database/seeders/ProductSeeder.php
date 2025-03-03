@@ -21,7 +21,7 @@ class ProductSeeder extends Seeder
                 'variants' => [
                     ['size' => 'small', 'stock' => 100],
                     ['size' => 'medium', 'stock' => 50],
-                    ['size' => 'large', 'stock' => 30],
+                    ['size' => 'big', 'stock' => 30],
                 ]
             ],
             [
@@ -34,7 +34,7 @@ class ProductSeeder extends Seeder
                 'variants' => [
                     ['size' => 'small', 'stock' => 120],
                     ['size' => 'medium', 'stock' => 80],
-                    ['size' => 'large', 'stock' => 60],
+                    ['size' => 'big', 'stock' => 60],
                 ]
             ],
             [
@@ -59,17 +59,18 @@ class ProductSeeder extends Seeder
             ]);
 
             if (!empty($productData['variants'])) {
-                
                 foreach ($productData['variants'] as $variant) {
                     ProductVariant::create([
                         'product_id' => $product->id,
-                        'variant_name' => $variant['size'] . ' size',
+                        'variant_name' => $variant['size'] . ' size', 
+                        'size' => $variant['size'],
                         'stock' => $variant['stock'],
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
                 }
             }
+            
         }
     }
 }

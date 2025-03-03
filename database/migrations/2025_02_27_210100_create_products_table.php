@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id('product_id');
+            $table->id();
             $table->string('name')->default('Default Product Name');
             $table->boolean('is_active')->default(true);
             $table->text('description')->nullable();

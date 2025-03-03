@@ -179,9 +179,9 @@
 
 <script>
     function formatRupiah(input) {
-        let value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-        let formatted = new Intl.NumberFormat('id-ID').format(value); // Format as Rupiah
-        input.value = value ? 'Rp ' + formatted : ''; // Add 'Rp' prefix
+        let value = input.value.replace(/[^0-9]/g, '');
+        let formatted = new Intl.NumberFormat('id-ID').format(value);
+        input.value = value ? 'Rp ' + formatted : '';
     }
 </script>
 
