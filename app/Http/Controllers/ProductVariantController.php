@@ -2,67 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Product;
 use App\Models\ProductVariant;
+use Illuminate\Http\Request;
 
 class ProductVariantController extends Controller
 {
+    // Menampilkan daftar varian
     public function index()
     {
-        try {
-            $variants = ProductVariant::all();
-            return response()->json($variants, 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch product variants', 'message' => $e->getMessage()], 500);
-        }
+        $variants = ProductVariant::with('product')->get();
+        return view('variants.index', compact('variants'));
     }
 
+    // Menampilkan form tambah varian
+    public function create()
+    {
+        $products = Product::all();
+        return view('variants.create', compact('products'));
+    }
+
+    // Menyimpan varian baru
     public function store(Request $request)
     {
-        try {
-            $validatedData = $request->validate([
-                'product_id' => 'required|integer|exists:products,id',
-                'variant_name' => 'required|string|max:255',
-                'stock' => 'required|integer|min:0',
-                'size' => 'required|string|max:50',
-            ]);
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'size' => 'required|string|max:50',
+            'stock' => 'required|integer|min:0',
+        ]);
 
-            $variant = ProductVariant::create($validatedData);
-            return response()->json(['message' => 'Product variant created successfully', 'data' => $variant], 201);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to create product variant', 'message' => $e->getMessage()], 500);
-        }
+        ProductVariant::create($request->all());
+
+        return redirect()->route('variants.index')->with('success', 'Variant created successfully.');
     }
 
-    public function show(ProductVariant $productVariant)
+    // Menampilkan form edit varian
+    public function edit(ProductVariant $variant)
     {
-        return response()->json($productVariant, 200);
+        $products = Product::all();
+        return view('variants.edit', compact('variant', 'products'));
     }
 
-    public function update(Request $request, ProductVariant $productVariant)
+    // Mengupdate varian
+    public function update(Request $request, ProductVariant $variant)
     {
-        try {
-            $validatedData = $request->validate([
-                'product_id' => 'sometimes|integer|exists:products,id',
-                'variant_name' => 'required|string|max:255',
-                'stock' => 'required|integer|min:0',
-                'size' => 'required|string|max:50',
-            ]);
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'size' => 'required|string|max:50',
+            'stock' => 'required|integer|min:0',
+        ]);
 
-            $productVariant->update($validatedData);
-            return response()->json(['message' => 'Product variant updated successfully', 'data' => $productVariant], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to update product variant', 'message' => $e->getMessage()], 500);
-        }
+        $variant->update($request->all());
+
+        return redirect()->route('variants.index')->with('success', 'Variant updated successfully.');
     }
 
-    public function destroy(ProductVariant $productVariant)
+    // Menghapus varian
+    public function destroy(ProductVariant $variant)
     {
-        try {
-            $productVariant->delete();
-            return response()->json(['message' => 'Product variant deleted successfully'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to delete product variant', 'message' => $e->getMessage()], 500);
-        }
+        $variant->delete();
+        return redirect()->route('variants.index')->with('success', 'Variant deleted successfully.');
     }
 }

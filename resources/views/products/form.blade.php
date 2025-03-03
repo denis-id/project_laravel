@@ -1,4 +1,5 @@
 @extends('layouts.app')
+
 @section('content')
     <div class="gap-6 grid grid-cols-1 sm:grid-cols-2">
         <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -9,136 +10,134 @@
                 </h3>
             </div>
 
-            <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ isset($product) ? route('products.update', $product->id) : route('products.store') }}"
+                method="POST" enctype="multipart/form-data">
                 @csrf
+                @if (isset($product))
+                    @method('PUT')
+                @endif
+
                 <div class="p-6.5">
-                    <div class="mb-5 flex flex-col gap-6 xl:flex-row">
-                        <div class="w-full xl:w-1/2">
-                            <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                Name
-                            </label>
-                            <input type="text" placeholder="Name" name="name" value="{{ old('name') }}"
-                                class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-                            @error('name')
+                    <!-- Name Field -->
+                    <div class="mb-5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                            Name
+                        </label>
+                        <input type="text" placeholder="Name" name="name"
+                            value="{{ old('name', $product->name ?? '') }}"
+                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                        @error('name')
+                            <p class="text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Price Field -->
+                    <div class="mb-5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                            Price
+                        </label>
+                        <div class="relative w-full">
+                            <span
+                                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-800 dark:text-white/90">Rp</span>
+                            <input type="number" id="price" placeholder="0" name="price"
+                                value="{{ old('price', $product->price ?? 0) }}"
+                                class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent pl-10 pr-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                            @error('price')
                                 <p class="text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
-
-                        <div class="w-full xl:w-1/2">
-                            <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                Price
-                            </label>
-                            <input type="text" id="price" placeholder="Rp 0" name="price"
-                                value="{{ 'Rp ' . number_format($product->price ?? old('price'), 0, ',', '.') }}"
-                                class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-                                oninput="formatRupiah(this)">
-                        </div>
                     </div>
 
-                    <div class="mb-5.5 flex flex-col gap-6 xl:flex-row">
-                        <div class="w-full xl:w-1/2">
-                            <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                Variant
-                            </label>
-                            <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-transparent dark:bg-form-input">
-                                <select name="variant_name"
-                                    class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-                                    <option value="">Select Variant</option>
-                                    @foreach ($variants as $variantName => $size)
-                                        <option value="{{ $variantName }}"
-                                            {{ isset($product) && $product->variants->first()->variant_name == $variantName ? 'selected' : '' }}>
-                                            {{ $variantName }} ({{ $size }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <span class="absolute right-4 top-1/2 z-30 -translate-y-1/2">
-                                    <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g opacity="0.8">
-                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                                                fill=""></path>
-                                        </g>
-                                    </svg>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="w-full xl:w-1/2">
-                            <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                Active
-                            </label>
-                            <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-transparent dark:bg-form-input">
-                                <select name="is_active"
-                                    class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-                                    <option value="1"
-                                        {{ (isset($product) ? $product->is_active : old('active', 1)) == 1 ? 'selected' : '' }}
-                                        class="text-body">Yes</option>
-                                    <option value="0"
-                                        {{ (isset($product) ? $product->is_active : old('active', 1)) == 0 ? 'selected' : '' }}
-                                        class="text-body">No</option>
-
-                                </select>
-                                <span class="absolute right-4 top-1/2 z-30 -translate-y-1/2">
-                                    <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g opacity="0.8">
-                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                                                fill=""></path>
-                                        </g>
-                                    </svg>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-5.5">
-                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                            Stock
-                        </label>
-                        <input type="number" placeholder="Stock" name="stock"
-                            value="{{ $productVariant->stock ?? old('stock') }}"
-                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-                    </div>
-
-                    <div class="mb-5.5">
+                    <!-- Category Field -->
+                    <div class="mb-5">
                         <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                             Category
                         </label>
-                        <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-transparent dark:bg-form-input">
-                            <select name="category_id"
-                                class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
-
-                                @foreach ($categories as $category)
-                                    <option
-                                        {{ $product->category_id ?? old('category_id') == $category->id ? 'selected' : '' }}
-                                        value="{{ $category->id }}">
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-
-                            </select>
-                            <span class="absolute right-4 top-1/2 z-30 -translate-y-1/2">
-                                <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <g opacity="0.8">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                                            fill=""></path>
-                                    </g>
-                                </svg>
-                            </span>
-                        </div>
+                        <select name="category_id"
+                            class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                            <option value="">Select Category</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ (isset($product) && $product->category_id == $category->id) || old('category_id') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('category_id')
+                            <p class="text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
 
+                    <!-- Active Field -->
+                    <div class="mb-5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                            Active
+                        </label>
+                        <select name="is_active"
+                            class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                            <option value="1"
+                                {{ (isset($product) && $product->is_active) || old('is_active', 1) == 1 ? 'selected' : '' }}>
+                                Yes</option>
+                            <option value="0"
+                                {{ (isset($product) && !$product->is_active) || old('is_active', 1) == 0 ? 'selected' : '' }}>
+                                No</option>
+                        </select>
+                        @error('is_active')
+                            <p class="text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Variants Section -->
+                    <div class="mb-5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                            Variants
+                        </label>
+                        <div id="variants-container">
+                            @if (isset($product) && $product->variants->count() > 0)
+                                @foreach ($product->variants as $index => $variant)
+                                    <div class="variant-item mb-4">
+                                        <div class="flex gap-4">
+                                            <input type="text" name="variants[{{ $index }}][size]"
+                                                placeholder="Size" value="{{ $variant->size }}"
+                                                class="dark:bg-dark-900 h-11 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                                            <input type="number" name="variants[{{ $index }}][stock]"
+                                                placeholder="Stock" value="{{ $variant->stock }}"
+                                                class="dark:bg-dark-900 h-11 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                                            <button type="button"
+                                                class="remove-variant bg-red-500 text-white px-4 py-2 rounded-lg">Remove</button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="variant-item mb-4">
+                                    <div class="flex gap-4">
+                                        <input type="text" name="variants[0][size]" placeholder="Size"
+                                            class="dark:bg-dark-900 h-11 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                                        <input type="number" name="variants[0][stock]" placeholder="Stock"
+                                            class="dark:bg-dark-900 h-11 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                                        <button type="button"
+                                            class="remove-variant bg-red-500 text-white px-4 py-2 rounded-lg">Remove</button>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                        <button type="button" id="add-variant" class="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2">Add
+                            Variant</button>
+                    </div>
+
+                    <!-- Description Field -->
                     <div class="mb-6">
                         <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                             Description
                         </label>
                         <textarea rows="6" placeholder="Description" name="description"
-                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">{{ $product->description ?? old('description') }}</textarea>
+                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">{{ old('description', $product->description ?? '') }}</textarea>
+                        @error('description')
+                            <p class="text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
+
+                    <!-- Submit Button -->
                     <center>
                         <button type="submit"
                             class="c-btn h-btn mt-3 py-3 px-5 rounded-pill bg-gradient-to-r from-purple-400 to-pink-500 text-white shadow-lg transform transition duration-500 hover:scale-110 hover:shadow-xl">
@@ -148,6 +147,8 @@
                 </div>
             </form>
         </div>
+
+        <!-- Image Upload Section -->
         <div class="flex flex-col gap-5">
             <div>
                 <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -162,28 +163,28 @@
                     </div>
 
                     <div>
-                        <input type="file" accept="image/*" id="imageUpload" class="hidden">
+                        <input type="file" accept="image/*" id="imageUpload" class="hidden" multiple>
                     </div>
 
                     <div id="imagePreview" class="grid grid-cols-2 gap-5.5 p-6.5">
-
+                        @if (isset($product) && $product->images)
+                            @foreach ($product->images as $image)
+                                <div class="relative">
+                                    <img class="rounded-lg object-cover aspect-square" alt="Image Preview"
+                                        src="{{ asset('storage/' . $image) }}" />
+                                    <button type="button"
+                                        class="delete-image-button bg-red-500 hover:bg-red-500/90 py-2 px-3.5 text-white rounded-full absolute -top-2 -right-2">
+                                        <i class="fa-solid fa-x"></i>
+                                    </button>
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
-    </div>
-    </div>
 @endsection
-
-<script>
-    function formatRupiah(input) {
-        let value = input.value.replace(/[^0-9]/g, '');
-        let formatted = new Intl.NumberFormat('id-ID').format(value);
-        input.value = value ? 'Rp ' + formatted : '';
-    }
-</script>
 
 @section('scripts')
     <script>

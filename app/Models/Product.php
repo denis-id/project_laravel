@@ -13,17 +13,13 @@ class Product extends Model
         'name',
         'description',
         'price',
+        'images',
         'category_id',
         'is_active',
-        'images',
-        'size',
-        'stock',
-        'variants'
     ];
 
     protected $casts = [
         'images' => 'array',
-        'variants' => 'array'
     ];
 
     public function category()

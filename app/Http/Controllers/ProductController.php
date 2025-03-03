@@ -13,15 +13,15 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-
         return view('products.index', ['products' => $products]);
     }
+
     public function create()
     {
         $categories = Category::all();
-        $variants = ProductVariant::select('variant_name', 'size')->get()->pluck('size', 'variant_name');
-        return view('products.form', compact('categories', 'variants'));
+        return view('products.form', compact('categories'));
     }
+
     public function store(Request $request)
     {
         // Validasi input
@@ -29,11 +29,12 @@ class ProductController extends Controller
             'name' => 'required|string|max:255|unique:products',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
-            'stock' => 'required|integer',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'category_id' => 'required|exists:categories,id',
-            'variant_name' => 'required|string|max:50',
             'is_active' => 'boolean',
+            'variants' => 'nullable|array',
+            'variants.*.size' => 'required|string',
+            'variants.*.stock' => 'required|integer',
         ]);
 
         try {
@@ -50,35 +51,30 @@ class ProductController extends Controller
             if ($request->hasFile('images')) {
                 $imagePaths = [];
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('products', 'public'); 
+                    $path = $image->store('products', 'public');
                     $imagePaths[] = $path;
                 }
                 $product->images = $imagePaths;
                 $product->save();
             }
 
-            // Simpan varian produk 
+            // Simpan varian produk
             if ($request->has('variants')) {
                 foreach ($request->variants as $variant) {
                     $productVariant = new ProductVariant();
                     $productVariant->product_id = $product->id;
-                    $productVariant->variant_name = $variant['variant_name'];
                     $productVariant->size = $variant['size'];
                     $productVariant->stock = $variant['stock'];
                     $productVariant->save();
                 }
             }
 
-            Product::create([
-                
-
-            ]);
-
             return redirect()->route('products.index')->with('success', 'Product created successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to create product: ' . $e->getMessage());
         }
     }
+
     public function show(string $id)
     {
         try {
@@ -90,13 +86,11 @@ class ProductController extends Controller
     }
 
     public function edit(string $id)
-    {   
+    {
         try {
-            $product = Product::find($id);
-            
+            $product = Product::with('variants')->findOrFail($id);
             $categories = Category::all();
-            $variants = ProductVariant::select('variant_name', 'size')->get()->pluck('size', 'variant_name');
-            return view('products.form', compact('product', 'categories', 'variants'));
+            return view('products.form', compact('product', 'categories'));
         } catch (\Exception $e) {
             return back()->with('error', 'Product not found: ' . $e->getMessage());
         }
@@ -109,11 +103,12 @@ class ProductController extends Controller
             'name' => 'required|string|max:255|unique:products,name,' . $id,
             'description' => 'nullable|string',
             'price' => 'required|numeric',
-            'stock' => 'required|integer',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'category_id' => 'required|exists:categories,id',
-            'variant' => 'required|string|max:50',
             'is_active' => 'boolean',
+            'variants' => 'nullable|array',
+            'variants.*.size' => 'required|string',
+            'variants.*.stock' => 'required|integer',
         ]);
 
         try {
@@ -122,14 +117,20 @@ class ProductController extends Controller
             $product->name = $request->name;
             $product->description = $request->description;
             $product->price = $request->price;
-            $product->stock = $request->stock;
             $product->category_id = $request->category_id;
             $product->is_active = $request->is_active ?? false;
-            $product->variant = $request->variant;
             $product->save();
 
             // Update gambar produk
             if ($request->hasFile('images')) {
+                // Hapus gambar lama jika ada
+                if ($product->images) {
+                    foreach ($product->images as $image) {
+                        Storage::disk('public')->delete($image);
+                    }
+                }
+
+                // Simpan gambar baru
                 $imagePaths = [];
                 foreach ($request->file('images') as $image) {
                     $path = $image->store('products', 'public');
@@ -141,7 +142,7 @@ class ProductController extends Controller
 
             // Update varian produk
             if ($request->has('variants')) {
-                $product->variants()->delete(); 
+                $product->variants()->delete(); // Hapus varian lama
                 foreach ($request->variants as $variant) {
                     $productVariant = new ProductVariant();
                     $productVariant->product_id = $product->id;
@@ -159,9 +160,25 @@ class ProductController extends Controller
 
     public function destroy(string $id)
     {
-        $product = Product::findOrFail($id);
-        $product->delete();
+        try {
+            $product = Product::findOrFail($id);
 
-        return redirect()->route('products.index')->with(['success' => 'Product deleted success']);
+            // Hapus gambar produk
+            if ($product->images) {
+                foreach ($product->images as $image) {
+                    Storage::disk('public')->delete($image);
+                }
+            }
+
+            // Hapus varian produk
+            $product->variants()->delete();
+
+            // Hapus produk
+            $product->delete();
+
+            return redirect()->route('products.index')->with('success', 'Product deleted successfully');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to delete product: ' . $e->getMessage());
+        }
     }
 }

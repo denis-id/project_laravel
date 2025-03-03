@@ -2,13 +2,17 @@
 @section('content')
     <div
         class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] shadow-lg transition-transform duration-300 hover:scale-105 max-w-full overflow-hidden">
-        <div class="px-5 py-4 sm:px-6 sm:py-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-t-2xl">
+        <div
+            class="px-5 py-4 sm:px-6 sm:py-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-t-2xl flex justify-between items-center">
             <h3 class="text-base font-medium text-white">Categories</h3>
+            <a href="{{ route('categories.create') }}"
+                class="bg-green-500 hover:bg-green-600 text-white font-medium px-4 py-2 rounded-lg shadow-md transition"> +
+                Add Category</a>
         </div>
         <div class="border-t border-gray-100 p-5 dark:border-gray-800 sm:p-6">
             <div class="max-w-full overflow-x-auto">
                 @if (session('success'))
-                    <div>{{ session('success') }}</div>
+                    <div class="text-green-500">{{ session('success') }}</div>
                 @endif
                 <table class="min-w-full bg-white dark:bg-gray-900">
                     <thead>
@@ -17,7 +21,8 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Description
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Actions
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,12 +42,15 @@
                                     <form method="POST" class="btn-category-delete"
                                         action="{{ route('categories.destroy', $category->id) }}">
                                         <a href="{{ route('categories.edit', $category->id) }}"
-                                            class="text-blue-600 hover:text-blue-800 hover:underline">Edit</a>
+                                            class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
                                         •
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit"
-                                            class="text-red-600 hover:text-red-800 hover:underline">Delete</button>
+                                        <button type="submit" class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </form>
                                 </td>
                             </tr>
