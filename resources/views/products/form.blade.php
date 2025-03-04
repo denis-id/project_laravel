@@ -2,6 +2,16 @@
 
 @section('content')
     <div class="gap-6 grid grid-cols-1 sm:grid-cols-2">
+
+        <!-- Tombol Back to Products -->
+        <div class="col-span-full">
+            <a href="{{ route('products.index') }}"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition rounded-lg bg-gradient-to-r from-purple-400 to-pink-500 shadow-theme-xs hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-600">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Products
+            </a>
+        </div>
+
         <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="px-5 py-4 sm:px-6 sm:py-5">
                 <h3

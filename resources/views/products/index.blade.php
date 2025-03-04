@@ -25,8 +25,9 @@
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Price</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Size</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Stock</th>
-                                <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Active</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Category</th>
+                                <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Description</th>
+                                <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Active</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Actions</th>
                             </tr>
                         </thead>
@@ -38,13 +39,13 @@
                                         <img src="{{ $product->images }}" alt="{{ $product->name }}"
                                             class="h-12 w-12 object-cover rounded-lg">
                                     </td>
-                                    <td class="px-4 py-2 text-sm text-gray-800 font-medium dark:text-white/90">
+                                    <td class="px-4 py-2 text-sm font-bold text-gray-800 dark:text-white/90">
                                         {{ $product->name }}
                                     </td>
                                     <td class="px-4 py-2 text-sm font-medium text-red-700 dark:text-white/90">
                                         Rp {{ number_format($product->price, 2, ',', '.') }}
                                     </td>
-                                    <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
+                                    <td class="px-4 py-2 text-sm font-medium text-blue-600 dark:text-white/90">
                                         @if ($product->variants && $product->variants->count())
                                             @foreach ($product->variants as $variant)
                                                 <span>{{ $variant->size ?? 'No Size' }} </span>
@@ -53,7 +54,8 @@
                                             <span>No Size Available</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-2 text-sm font-medium text-gray-500 font-medium dark:text-white/90">
+                                    <td
+                                        class="px-4 py-2 text-sm font-medium text-orange-500 font-medium dark:text-white/90">
                                         @if ($product->variants && $product->variants->count())
                                             @foreach ($product->variants as $variant)
                                                 <span>{{ $variant->stock ?? 'Out of stock' }} </span>
@@ -62,13 +64,16 @@
                                             <span>Out of stock</span>
                                         @endif
                                     </td>
-                                    <td
-                                        class="px-4 py-2 text-sm text-gray-800 dark:text-white/90 {{ $product->is_active ? 'text-green-500 font-bold' : 'text-orange-700 font-bold' }}">
-                                        {{ $product->is_active ? 'Yes' : 'No' }}
-                                    </td>
-                                    <td class="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white/90">
+                                    <td class="px-4 py-2 text-sm font-bold text-gray-800 dark:text-white/90">
                                         {{ $product->category->name ?? 'No Category' }}
                                         <span class="text-gray-500"> (ID: {{ $product->category->id ?? 'N/A' }})</span>
+                                    </td>
+                                    <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
+                                        {{ $product->description ?? 'No description available' }}
+                                    </td>
+                                    <td
+                                        class="px-4 py-2 text-sm text-gray-800 dark:text-white/90 {{ $product->is_active ? 'text-green-600 font-bold' : 'text-orange-700 font-bold' }}">
+                                        {{ $product->is_active ? 'Yes' : 'No' }}
                                     </td>
                                     <td class="px-4 py-2 text-sm">
                                         <a href="{{ route('products.edit', $product->id) }}"
