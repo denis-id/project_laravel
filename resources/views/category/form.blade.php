@@ -27,9 +27,10 @@
                         Name</label>
                     <input type="text" id="name" name="name" value="{{ old('name', $category->name ?? '') }}"
                         class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm"
-                        required>
+                        required placeholder="category name">
                 </div>
                 <div class="mb-4">
+                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
                     <label for="is_active" class="inline-flex items-center">
                         <select id="is_active" name="is_active"
                             class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white shadow-sm">

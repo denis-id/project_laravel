@@ -20,6 +20,7 @@
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead>
                             <tr>
+                                <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">#</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Image</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Name</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Price</th>
@@ -32,20 +33,22 @@
                             </tr>
                         </thead>
                         <tbody>
-
-                            @foreach ($products as $product)
+                            @foreach ($products->sortByDesc('created_at') as $index => $product)
                                 <tr class="border-b border-gray-200 dark:border-gray-700">
                                     <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
+                                        {{ $index + 1 }}
+                                    </td>
+                                    <td class="px-4 py-2 text-xs text-gray-800 dark:text-white/90">
                                         <img src="{{ $product->images }}" alt="{{ $product->name }}"
                                             class="h-12 w-12 object-cover rounded-lg">
                                     </td>
-                                    <td class="px-4 py-2 text-sm font-bold text-gray-800 dark:text-white/90">
+                                    <td class="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white/90">
                                         {{ $product->name }}
                                     </td>
-                                    <td class="px-4 py-2 text-sm font-medium text-red-700 dark:text-white/90">
+                                    <td class="px-4 py-2 text-xs font-medium text-red-700 dark:text-white/90">
                                         Rp {{ number_format($product->price, 2, ',', '.') }}
                                     </td>
-                                    <td class="px-4 py-2 text-sm font-medium text-blue-600 dark:text-white/90">
+                                    <td class="px-4 py-2 text-xs font-medium text-blue-600 dark:text-white/90">
                                         @if ($product->variants && $product->variants->count())
                                             @foreach ($product->variants as $variant)
                                                 <span>{{ $variant->size ?? 'No Size' }} </span>
@@ -54,8 +57,7 @@
                                             <span>No Size Available</span>
                                         @endif
                                     </td>
-                                    <td
-                                        class="px-4 py-2 text-sm font-medium text-orange-500 font-medium dark:text-white/90">
+                                    <td class="px-4 py-2 text-xs font-medium text-orange-500 dark:text-white/90">
                                         @if ($product->variants && $product->variants->count())
                                             @foreach ($product->variants as $variant)
                                                 <span>{{ $variant->stock ?? 'Out of stock' }} </span>
@@ -64,11 +66,11 @@
                                             <span>Out of stock</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-2 text-sm font-bold text-gray-800 dark:text-white/90">
+                                    <td class="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white/90">
                                         {{ $product->category->name ?? 'No Category' }}
                                         <span class="text-gray-500"> (ID: {{ $product->category->id ?? 'N/A' }})</span>
                                     </td>
-                                    <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
+                                    <td class="px-4 py-2 text-xs text-gray-800 dark:text-white/90">
                                         {{ $product->description ?? 'No description available' }}
                                     </td>
                                     <td

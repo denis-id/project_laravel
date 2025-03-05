@@ -24,7 +24,8 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
+        Auth::login($user);
+        return redirect()->route('dashboard');
         } catch (\Exception $e) {
             return response()->json(['message' => 'Registration Failed', 'error' => $e->getMessage()],400);
         }
@@ -33,13 +34,34 @@ class AuthController extends Controller
     public function login(Request $request)
     {
     try {
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            return response()->json(['message' => 'Login successful', 'user' => Auth::user()], 200);
+        if (Auth::attempt([
+            'email' => $request->email, 
+            'password' => $request->password
+
+            ]))
+        {
+            return response()->json([
+                'message' => 'Login successful', 
+                'user' => Auth::user()
+            ], 200);
         }
 
-        return response()->json(['message' => 'Invalid user'], 401);
+        return response()->json([
+            'message' => 'Invalid user'
+            ], 401);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Login Failed', 'error' => $e->getMessage()],400);
+            return response()->json([
+                'message' => 'Login Failed', 
+                'error' => $e->getMessage()
+            ],400);
         }
+    }
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
     }
 }
