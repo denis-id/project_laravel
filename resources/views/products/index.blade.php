@@ -127,7 +127,7 @@
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         •
-                                        <form class="btn-category-delete"
+                                        <form class="btn-product-delete"
                                             action="{{ route('products.destroy', $product->id) }}" method="POST"
                                             style="display:inline;">
                                             @csrf
@@ -149,11 +149,11 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $('.btn-category-delete').on('submit', function(event) {
+            $('.btn-product-delete').on('submit', function(event) {
                 event.preventDefault();
                 Swal.fire({
-                    title: 'Are you sure you want to delete this category?',
-                    text: 'You will not be able to recover this category.',
+                    title: 'Are you sure you want to delete this product?',
+                    text: 'You will not be able to recover this product.',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, delete it',

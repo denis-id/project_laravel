@@ -56,6 +56,7 @@ class ProductController extends Controller
                 }
                 $product->images = $imagePaths;
                 $product->save();
+                dd($product);
             }
 
             // Simpan varian produk

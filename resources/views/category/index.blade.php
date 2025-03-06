@@ -52,7 +52,7 @@
             <table class="min-w-full bg-white dark:bg-gray-900">
                 <thead>
                     <tr>
-                        <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">No</th>
+                        <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">ID</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Name</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Status</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Actions
@@ -73,7 +73,7 @@
                             <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90 text-center">
                                 {{ $index + 1 }}
                             </td>
-                            <td class="px-4 py-4 text-sm font-bold text-gray-800 dark:text-white/90">
+                            <td class="px-4 py-4 text-sm font-medium text-gray-800 dark:text-white/90">
                                 {{ $category->name }}
                             </td>
                             <td class="px-4 py-4 text-sm">
