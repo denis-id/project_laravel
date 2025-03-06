@@ -181,22 +181,4 @@ class ProductController extends Controller
             return back()->with('error', 'Failed to delete product: ' . $e->getMessage());
         }
     }
-    public function search(Request $request)
-    {
-        $request->validate([
-            'q' => 'required|string|min:2|max:255',
-        ]);
-        
-        $query = $request->input('q');
-
-        $products = Product::query()
-            ->where('name', 'LIKE', "%{$query}%")
-            ->orWhere('description', 'LIKE', "%{$query}%")
-            ->orWhereHas('category', function ($q) use ($query) {
-                $q->where('name', 'LIKE', "%{$query}%");
-            })
-            ->get();
-
-        return response()->json($products);
-    }
 }

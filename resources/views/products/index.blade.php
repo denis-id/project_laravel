@@ -12,13 +12,14 @@
         </div>
 
         <div class="border-t border-gray-100 p-5 dark:border-gray-800 sm:p-6">
-            <div class="mb-4">Filter
+            <div class="mb-4 dark:text-white">Sort By
                 <form method="GET" action="{{ route('products.index') }}">
-                    <select name="sort" onchange="this.form.submit()" class="px-4 py-2 rounded-lg border">
+                    <select name="sort" onchange="this.form.submit()"
+                        class="appearance-none px-4 py-2 rounded-lg border bg-white dark:bg-gray-800 text-gray-800 dark:text-white transition-all duration-300 ease-in-out focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         <option value="all" {{ request('sort') == 'all' ? 'selected' : '' }}>All</option>
                         <hr>
-                        <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest</option>
-                        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
+                        <option value="active" {{ request('sort') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ request('sort') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                         <hr>
                         <option value="lowest_price" {{ request('sort') == 'lowest_price' ? 'selected' : '' }}>Lowest Price
                         </option>
@@ -34,7 +35,7 @@
                         <hr>
                         <option value="lowest_stock" {{ request('sort') == 'lowest_stock' ? 'selected' : '' }}>Minimum
                             Stock</option>
-                        <option value="highest_stock" {{ request('sort') == 'highest_stock' ? 'selected' : '' }}>Largest
+                        <option value="highest_stock" {{ request('sort') == 'highest_stock' ? 'selected' : '' }}>High
                             Stock</option>
                     </select>
                 </form>
@@ -46,6 +47,8 @@
                         $products = match (request('sort')) {
                             'all' => $products,
                             'oldest' => $products->sortBy('created_at'),
+                            'active' => $products->where('is_active', true),
+                            'inactive' => $products->where('is_active', false),
                             'lowest_price' => $products->sortBy('price'),
                             'highest_price' => $products->sortByDesc('price'),
                             'smallest_size' => $products->sortBy(fn($p) => $p->variants->min('size') ?? ''),
@@ -84,6 +87,8 @@
                                                 <img src="{{ asset('storage/' . $image) }}" alt="{{ $product->name }}"
                                                     class="h-12 w-12 object-cover rounded-lg">
                                             @endforeach
+                                        @else
+                                            <p>No Images</p>
                                         @endif
                                     </td>
                                     <td class="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white/90">
@@ -113,7 +118,7 @@
                                         {{ $product->description ?? 'No description available' }}
                                     </td>
                                     <td
-                                        class="rounded-full py-0 px-0 text-xs font-medium {{ $product->is_active ? 'bg-success-50 text-success-700' : 'bg-warning-50 text-warning-700' }}">
+                                        class="rounded-full px-2 py-0.5 text-xs font-medium {{ $product->is_active ? 'bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-500' : 'bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-400' }}">
                                         {{ $product->is_active ? 'Active' : 'Inactive' }}
                                     </td>
                                     <td class="px-4 py-2 text-sm">
