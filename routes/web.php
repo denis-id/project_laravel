@@ -10,6 +10,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/', DashboardController::class)->name('dashboard');
     Route::resource('categories', CategoryController::class);
     Route::resource('products', ProductController::class);
+    Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 

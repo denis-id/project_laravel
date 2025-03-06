@@ -51,7 +51,7 @@
             <!-- Application nav menu button -->
 
             <div class="hidden lg:block">
-                <form action="https://formbold.com/s/unique_form_id" method="POST">
+                <form id="searchForm" action="" method="POST">
                     <div class="relative">
                         <button class="absolute -translate-y-1/2 left-4 top-1/2">
                             <svg class="fill-gray-500 dark:fill-gray-400" width="20" height="20"
@@ -463,6 +463,7 @@
 
                             Sign out
                         </button>
+                    </form>
                 </div>
                 <!-- Dropdown End -->
             </div>

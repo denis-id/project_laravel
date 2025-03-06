@@ -103,7 +103,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255|unique:products,name,' . $id,
             'description' => 'nullable|string',
             'price' => 'required|numeric',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'category_id' => 'required|exists:categories,id',
             'is_active' => 'boolean',
             'variants' => 'nullable|array',
@@ -180,5 +180,23 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to delete product: ' . $e->getMessage());
         }
+    }
+    public function search(Request $request)
+    {
+        $request->validate([
+            'q' => 'required|string|min:2|max:255',
+        ]);
+        
+        $query = $request->input('q');
+
+        $products = Product::query()
+            ->where('name', 'LIKE', "%{$query}%")
+            ->orWhere('description', 'LIKE', "%{$query}%")
+            ->orWhereHas('category', function ($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%");
+            })
+            ->get();
+
+        return response()->json($products);
     }
 }

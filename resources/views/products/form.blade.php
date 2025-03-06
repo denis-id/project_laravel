@@ -50,8 +50,10 @@
                             <span
                                 class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-800 dark:text-white/90">Rp</span>
                             <input type="number" id="price" placeholder="0" name="price"
-                                value="{{ old('price', $product->price ?? 0) }}"
+                                value="{{ $product->price ?? '' }}"
                                 class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent pl-10 pr-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+
+
                             @error('price')
                                 <p class="text-red-500">{{ $message }}</p>
                             @enderror
@@ -199,6 +201,33 @@
 
 @section('scripts')
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addVariantBtn = document.getElementById('add-variant');
+            const variantsContainer = document.getElementById('variants-container');
+
+            let variantIndex = document.querySelectorAll('.variant-item').length;
+
+            addVariantBtn.addEventListener('click', function() {
+                const variantHtml = `
+            <div class="variant-item mb-4">
+                <div class="flex gap-4">
+                    <input type="text" name="variants[${variantIndex}][size]" placeholder="Size" class="dark:bg-dark-900 h-11 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                    <input type="number" name="variants[${variantIndex}][stock]" placeholder="Stock" class="dark:bg-dark-900 h-11 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                    <button type="button" class="remove-variant bg-red-500 text-white px-4 py-2 rounded-lg">Remove</button>
+                </div>
+            </div>
+        `;
+                variantsContainer.insertAdjacentHTML('beforeend', variantHtml);
+                variantIndex++;
+            });
+
+            variantsContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-variant')) {
+                    e.target.closest('.variant-item').remove();
+                }
+            });
+        });
+
         $(document).ready(function() {
             const token = document.head.querySelector('meta[name="csrf-token"]').content;
             const variants = [];

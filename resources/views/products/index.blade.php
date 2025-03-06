@@ -12,15 +12,55 @@
         </div>
 
         <div class="border-t border-gray-100 p-5 dark:border-gray-800 sm:p-6">
+            <div class="mb-4">Filter
+                <form method="GET" action="{{ route('products.index') }}">
+                    <select name="sort" onchange="this.form.submit()" class="px-4 py-2 rounded-lg border">
+                        <option value="all" {{ request('sort') == 'all' ? 'selected' : '' }}>All</option>
+                        <hr>
+                        <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest</option>
+                        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
+                        <hr>
+                        <option value="lowest_price" {{ request('sort') == 'lowest_price' ? 'selected' : '' }}>Lowest Price
+                        </option>
+                        <option value="highest_price" {{ request('sort') == 'highest_price' ? 'selected' : '' }}>Highest
+                            Price</option>
+                        <hr>
+                        <option value="smallest_size" {{ request('sort') == 'smallest_size' ? 'selected' : '' }}>Smallest
+                            Size</option>
+                        <option value="medium_size" {{ request('sort') == 'medium_size' ? 'selected' : '' }}>Medium Size
+                        </option>
+                        <option value="biggest_size" {{ request('sort') == 'biggest_size' ? 'selected' : '' }}>Big Size
+                        </option>
+                        <hr>
+                        <option value="lowest_stock" {{ request('sort') == 'lowest_stock' ? 'selected' : '' }}>Minimum
+                            Stock</option>
+                        <option value="highest_stock" {{ request('sort') == 'highest_stock' ? 'selected' : '' }}>Largest
+                            Stock</option>
+                    </select>
+                </form>
+            </div>
+
             <div class="max-w-full overflow-x-auto">
                 <div class="min-w-[800px]">
-                    @if (session('success'))
-                        <div class="text-green-500">{{ session('success') }}</div>
-                    @endif
+                    @php
+                        $products = match (request('sort')) {
+                            'all' => $products,
+                            'oldest' => $products->sortBy('created_at'),
+                            'lowest_price' => $products->sortBy('price'),
+                            'highest_price' => $products->sortByDesc('price'),
+                            'smallest_size' => $products->sortBy(fn($p) => $p->variants->min('size') ?? ''),
+                            'medium_size' => $products->filter(fn($p) => $p->variants->contains('size', 'M')),
+                            'biggest_size' => $products->sortByDesc(fn($p) => $p->variants->max('size') ?? ''),
+                            'lowest_stock' => $products->sortBy(fn($p) => $p->variants->min('stock') ?? 0),
+                            'highest_stock' => $products->sortByDesc(fn($p) => $p->variants->max('stock') ?? 0),
+                            default => $products->sortByDesc('created_at'),
+                        };
+                    @endphp
+
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead>
                             <tr>
-                                <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">#</th>
+                                <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">No</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Image</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Name</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Price</th>
@@ -28,54 +68,53 @@
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Stock</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Category</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Description</th>
-                                <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Active</th>
+                                <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Status</th>
                                 <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($products->sortByDesc('created_at') as $index => $product)
+                            @foreach ($products as $index => $product)
                                 <tr class="border-b border-gray-200 dark:border-gray-700">
                                     <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
                                         {{ $index + 1 }}
                                     </td>
                                     <td class="px-4 py-2 text-xs text-gray-800 dark:text-white/90">
-                                        <img src="{{ $product->images }}" alt="{{ $product->name }}"
-                                            class="h-12 w-12 object-cover rounded-lg">
+                                        @if ($product->images)
+                                            @foreach ($product->images as $image)
+                                                <img src="{{ asset('storage/' . $image) }}" alt="{{ $product->name }}"
+                                                    class="h-12 w-12 object-cover rounded-lg">
+                                            @endforeach
+                                        @endif
                                     </td>
                                     <td class="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white/90">
                                         {{ $product->name }}
                                     </td>
-                                    <td class="px-4 py-2 text-xs font-medium text-red-700 dark:text-white/90">
+                                    <td class="px-4 py-2 text-xs font-medium text-red-700 dark:text-red/90">
                                         Rp {{ number_format($product->price, 2, ',', '.') }}
                                     </td>
-                                    <td class="px-4 py-2 text-xs font-medium text-blue-600 dark:text-white/90">
-                                        @if ($product->variants && $product->variants->count())
-                                            @foreach ($product->variants as $variant)
-                                                <span>{{ $variant->size ?? 'No Size' }} </span>
-                                            @endforeach
-                                        @else
-                                            <span>No Size Available</span>
-                                        @endif
+                                    <td class="px-4 py-2 text-xs font-bold text-black dark:text-white/90">
+                                        @foreach ($product->variants as $variant)
+                                            <span>{{ $variant->size ?? 'No Size' }}</span>
+                                        @endforeach
                                     </td>
-                                    <td class="px-4 py-2 text-xs font-medium text-orange-500 dark:text-white/90">
-                                        @if ($product->variants && $product->variants->count())
-                                            @foreach ($product->variants as $variant)
-                                                <span>{{ $variant->stock ?? 'Out of stock' }} </span>
-                                            @endforeach
-                                        @else
-                                            <span>Out of stock</span>
-                                        @endif
+                                    <td class="px-4 py-2 text-xs font-bold">
+                                        @foreach ($product->variants as $variant)
+                                            <span
+                                                class="{{ $variant->stock < 20 ? 'text-red-600 dark:text-orange/90' : 'text-blue-500 dark:text-blue/90' }}">
+                                                {{ $variant->stock ?? 'Out of stock' }}
+                                            </span>
+                                        @endforeach
                                     </td>
+
                                     <td class="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white/90">
                                         {{ $product->category->name ?? 'No Category' }}
-                                        <span class="text-gray-500"> (ID: {{ $product->category->id ?? 'N/A' }})</span>
                                     </td>
                                     <td class="px-4 py-2 text-xs text-gray-800 dark:text-white/90">
                                         {{ $product->description ?? 'No description available' }}
                                     </td>
                                     <td
-                                        class="px-4 py-2 text-sm text-gray-800 dark:text-white/90 {{ $product->is_active ? 'text-green-600 font-bold' : 'text-orange-700 font-bold' }}">
-                                        {{ $product->is_active ? 'Yes' : 'No' }}
+                                        class="rounded-full py-0 px-0 text-xs font-medium {{ $product->is_active ? 'bg-success-50 text-success-700' : 'bg-warning-50 text-warning-700' }}">
+                                        {{ $product->is_active ? 'Active' : 'Inactive' }}
                                     </td>
                                     <td class="px-4 py-2 text-sm">
                                         <a href="{{ route('products.edit', $product->id) }}"
@@ -83,16 +122,15 @@
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         •
-                                        <form action="{{ route('products.destroy', $product->id) }}" method="POST"
+                                        <form class="btn-category-delete"
+                                            action="{{ route('products.destroy', $product->id) }}" method="POST"
                                             style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:underline"
-                                                onclick="return confirm('Are you sure?')">
+                                            <button type="submit" class="text-red-600 hover:text-red-800">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
-                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -101,4 +139,28 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            $('.btn-category-delete').on('submit', function(event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: 'Are you sure you want to delete this category?',
+                    text: 'You will not be able to recover this category.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    cancelButtonText: 'No',
+                }).then((result) => {
+                    if (result.value) {
+                        this.submit();
+                    }
+                })
+            })
+        })
+    </script>
 @endsection
