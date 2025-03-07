@@ -158,48 +158,51 @@
                     <div class="flex flex-col gap-5">
                         <div>
                             <div
-                                class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                                class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:scale-105">
                                 <div
                                     class="border-b border-stroke px-6.5 py-4 flex items-center justify-between dark:border-strokedark">
-                                    <h3 class="font-medium text-black dark:text-white">
+                                    <h3 class="font-medium text-black dark:text-white text-lg tracking-wide">
                                         Add Images
                                     </h3>
                                 </div>
 
-                                <div>
-                                    <input type="file" accept="image/*" id="imageUpload" name="images[]"
-                                        class="form-control" multiple>
-                                </div>
-
-                                <div id="imagePreview" class="grid grid-cols-2 gap-5.5 p-6.5">
-                                    @if (isset($product) && $product->images)
-                                        @foreach ($product->images as $image)
-                                            <div class="relative">
-                                                <img src="{{ asset('storage/' . $image) }}"
-                                                    class="rounded-lg object-cover aspect-square" alt="Product Image"
-                                                    width="100">
-                                                <button type="button"
-                                                    class="delete-image-button bg-red-500 hover:bg-red-600 py-2 px-3.5 text-white rounded-full absolute -top-2 -right-2 transition-colors duration-200">
-                                                    <i class="fa-solid fa-x"></i>
-                                                </button>
-                                            </div>
-                                        @endforeach
-                                    @endif
+                                <div class="flex justify-center py-6">
+                                    <label for="imageUpload"
+                                        class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105">
+                                        Choose Images
+                                    </label>
+                                    <input type="file" accept="image/*" id="imageUpload" name="images[]" class="hidden"
+                                        multiple>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div id="imagePreview" class="grid grid-cols-2 gap-5.5 p-6.5">
+                        @if (isset($product) && $product->images)
+                            @foreach ($product->images as $image)
+                                <div class="relative">
+                                    <img src="{{ asset('storage/' . $image) }}"
+                                        class="rounded-lg object-cover aspect-square" alt="Product Image" width="100">
+                                    <button type="button"
+                                        class="delete-image-button bg-red-500 hover:bg-red-600 py-2 px-3.5 text-white rounded-full absolute -top-2 -right-2 transition-colors duration-200">
+                                        <i class="fa-solid fa-x"></i>
+                                    </button>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
 
                     <!-- Submit Button -->
-                    <center>
+                    <div class="flex justify-center">
                         <button type="submit"
                             class="c-btn h-btn mt-6 py-3 px-6 rounded-lg bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg transform transition-all duration-500 hover:scale-105 hover:shadow-xl">
                             Submit
                         </button>
-                    </center>
+                    </div>
                 </div>
-            </form>
         </div>
+        </form>
+    </div>
     </div>
 @endsection
 

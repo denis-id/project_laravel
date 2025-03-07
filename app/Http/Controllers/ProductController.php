@@ -6,13 +6,33 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $products = Product::all();
+
+        // filter products
+        $products = match ($request->sort) {
+            'all', 'all-categories' => $products,
+            'oldest' => $products->sortBy('created_at'),
+            'active' => $products->where('is_active', true),
+            'inactive' => $products->where('is_active', false),
+            'lowest_price' => $products->sortBy('price'),
+            'highest_price' => $products->sortByDesc('price'),
+            'smallest_size' => $products->sortBy(fn($p) => $p->variants->min('size') ?? ''),
+            'medium_size' => $products->filter(fn($p) => $p->variants->contains('size', 'M')),
+            'biggest_size' => $products->sortByDesc(fn($p) => $p->variants->max('size') ?? ''),
+            'lowest_stock' => $products->sortBy(fn($p) => $p->variants->min('stock') ?? 0),
+            'highest_stock' => $products->sortByDesc(fn($p) => $p->variants->max('stock') ?? 0),
+            'category' => $products->where('category_id', $request->category),
+            default => $products->sortByDesc('created_at'),
+        };
+        
         return view('products.index', compact('products'));
     }
 
@@ -36,7 +56,7 @@ class ProductController extends Controller
             return back()->with('error', 'Failed to create product: ' . $e->getMessage());
         }
     }
-
+    
     public function show(string $id)
     {
         $product = Product::with('category', 'variants')->findOrFail($id);
@@ -183,4 +203,27 @@ class ProductController extends Controller
             }
         }
     }
+    
+    public function downloadPdf($id)
+    {
+        $product = Product::find($id);
+
+        // Render view jadi HTML
+        $html = view('products.pdf', compact('product'))->render();
+
+      // Konfigurasi Dompdf
+      $options = new Options();
+      $options->set('defaultFont', 'Helvetica');
+      $options->set('isHtml5ParserEnabled', true);
+      $options->set('isRemoteEnabled', true);
+
+      // Buat Dompdf instance
+      $dompdf = new Dompdf($options);
+      $dompdf->loadHtml($html);
+      $dompdf->setPaper('A4', 'portrait');
+      $dompdf->render();
+
+      // Download PDF
+      return $dompdf->stream('product-' . $product->id . '.pdf');
+        }
 }    
