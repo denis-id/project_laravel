@@ -13,7 +13,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        return view('products.index', ['products' => $products]);
+        return view('products.index', compact('products'));
     }
 
     public function create()
@@ -24,82 +24,34 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi input
-        $request->validate([
-            'name' => 'required|string|max:255|unique:products',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'category_id' => 'required|exists:categories,id',
-            'is_active' => 'boolean',
-            'variants' => 'nullable|array',
-            'variants.*.size' => 'required|string',
-            'variants.*.stock' => 'required|integer',
-        ]);
+        $this->validateProduct($request);
 
         try {
-            // Simpan data produk
-            $product = new Product();
-            $product->name = $request->name;
-            $product->description = $request->description;
-            $product->price = $request->price;
-            $product->category_id = $request->category_id;
-            $product->is_active = $request->is_active ?? false;
-            $product->save();
-
-            // Simpan gambar produk
-            if ($request->hasFile('images')) {
-                $imagePaths = [];
-                foreach ($request->file('images') as $image) {
-                    $path = $image->store('products', 'public');
-                    $imagePaths[] = $path;
-                }
-                $product->images = $imagePaths;
-                $product->save();
-                dd($product);
-            }
-
-            // Simpan varian produk
-            if ($request->has('variants')) {
-                foreach ($request->variants as $variant) {
-                    $productVariant = new ProductVariant();
-                    $productVariant->product_id = $product->id;
-                    $productVariant->size = $variant['size'];
-                    $productVariant->stock = $variant['stock'];
-                    $productVariant->save();
-                }
-            }
+            $product = Product::create($this->getProductData($request));
+            $this->handleImages($request, $product);
+            $this->handleVariants($request, $product);
 
             return redirect()->route('products.index')->with('success', 'Product created successfully');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to create product: ' . $e->getMessage());
+            return back()->with('error', 'Failed to create product: ' . $e->getMessage());
         }
     }
 
     public function show(string $id)
     {
-        try {
-            $product = Product::with('category', 'variants')->findOrFail($id);
-            return view('products.show', compact('product'));
-        } catch (\Exception $e) {
-            return back()->with('error', 'Product not found: ' . $e->getMessage());
-        }
+        $product = Product::with('category', 'variants')->findOrFail($id);
+        return view('products.show', compact('product'));
     }
 
     public function edit(string $id)
     {
-        try {
-            $product = Product::with('variants')->findOrFail($id);
-            $categories = Category::all();
-            return view('products.form', compact('product', 'categories'));
-        } catch (\Exception $e) {
-            return back()->with('error', 'Product not found: ' . $e->getMessage());
-        }
+        $product = Product::with('variants')->findOrFail($id);
+        $categories = Category::all();
+        return view('products.form', compact('product', 'categories'));
     }
 
     public function update(Request $request, string $id)
     {
-        // Validasi input
         $request->validate([
             'name' => 'required|string|max:255|unique:products,name,' . $id,
             'description' => 'nullable|string',
@@ -113,7 +65,6 @@ class ProductController extends Controller
         ]);
 
         try {
-            // Temukan produk yang akan diupdate
             $product = Product::findOrFail($id);
             $product->name = $request->name;
             $product->description = $request->description;
@@ -122,16 +73,13 @@ class ProductController extends Controller
             $product->is_active = $request->is_active ?? false;
             $product->save();
 
-            // Update gambar produk
             if ($request->hasFile('images')) {
-                // Hapus gambar lama jika ada
                 if ($product->images) {
                     foreach ($product->images as $image) {
                         Storage::disk('public')->delete($image);
                     }
                 }
 
-                // Simpan gambar baru
                 $imagePaths = [];
                 foreach ($request->file('images') as $image) {
                     $path = $image->store('products', 'public');
@@ -141,9 +89,8 @@ class ProductController extends Controller
                 $product->save();
             }
 
-            // Update varian produk
             if ($request->has('variants')) {
-                $product->variants()->delete(); // Hapus varian lama
+                $product->variants()->delete();
                 foreach ($request->variants as $variant) {
                     $productVariant = new ProductVariant();
                     $productVariant->product_id = $product->id;
@@ -163,18 +110,8 @@ class ProductController extends Controller
     {
         try {
             $product = Product::findOrFail($id);
-
-            // Hapus gambar produk
-            if ($product->images) {
-                foreach ($product->images as $image) {
-                    Storage::disk('public')->delete($image);
-                }
-            }
-
-            // Hapus varian produk
+            $this->deleteImages($product);
             $product->variants()->delete();
-
-            // Hapus produk
             $product->delete();
 
             return redirect()->route('products.index')->with('success', 'Product deleted successfully');
@@ -182,4 +119,68 @@ class ProductController extends Controller
             return back()->with('error', 'Failed to delete product: ' . $e->getMessage());
         }
     }
-}
+
+    public function validateProduct(Request $request, $id = null)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:products,name,' . $id,
+            'description' => 'nullable|string',
+            'price' => 'required|numeric',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'category_id' => 'required|exists:categories,id',
+            'is_active' => 'boolean',
+            'variants' => 'nullable|array',
+            'variants.*.size' => 'required|string',
+            'variants.*.stock' => 'required|integer',
+        ]);
+    }
+
+    public function getProductData(Request $request)
+    {
+        return $request->only([
+            'name', 
+            'description', 
+            'price', 
+            'category_id']) + ['is_active' => $request->is_active ?? false
+        ];
+    }
+
+    public function handleImages(Request $request, Product $product, $isUpdate = false)
+    {
+        if ($request->hasFile('images')) {
+            if ($isUpdate && $product->images) {
+                $this->deleteImages($product);
+            }
+
+            $imagePaths = [];
+            foreach ($request->file('images') as $image) {
+                $imagePaths[] = $image->store('products', 'public');
+            }
+
+            $product->images = $imagePaths;
+            $product->save();
+        }
+    }
+
+    public function handleVariants(Request $request, Product $product, $isUpdate = false)
+    {
+        if ($isUpdate) {
+            $product->variants()->delete();
+        }
+
+        if ($request->has('variants')) {
+            foreach ($request->variants as $variant) {
+                $product->variants()->create($variant);
+            }
+        }
+    }
+
+    public function deleteImages(Product $product)
+    {
+        if ($product->images) {
+            foreach ($product->images as $image) {
+                Storage::disk('public')->delete($image);
+            }
+        }
+    }
+}    

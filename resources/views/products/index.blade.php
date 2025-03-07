@@ -78,26 +78,29 @@
                         <tbody>
                             @foreach ($products as $index => $product)
                                 <tr class="border-b border-gray-200 dark:border-gray-700">
-                                    <td class="px-4 py-2 text-sm text-gray-800 dark:text-white/90">
+                                    <td class="px-0 py-2 text-xs text-gray-800 dark:text-white/90">
                                         {{ $index + 1 }}
                                     </td>
-                                    <td class="px-4 py-2 text-xs text-gray-800 dark:text-white/90">
+                                    <td class="px-4 py-4 text-xs text-gray-800 dark:text-white/90">
                                         @if ($product->images)
-                                            @foreach ($product->images as $image)
-                                                <img src="{{ asset('storage/' . $image) }}" alt="{{ $product->name }}"
-                                                    class="h-12 w-12 object-cover rounded-lg">
-                                            @endforeach
+                                            <div class="flex flex-wrap gap-2">
+                                                @foreach ($product->images as $image)
+                                                    <img src="{{ asset('storage/' . $image) }}" alt="{{ $product->name }}"
+                                                        class="h-20 w-20 object-cover rounded-lg">
+                                                @endforeach
+                                            </div>
                                         @else
-                                            <p>No Images</p>
+                                            <p class="text-center text-gray-500">No Images</p>
                                         @endif
                                     </td>
                                     <td class="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white/90">
                                         {{ $product->name }}
                                     </td>
-                                    <td class="px-4 py-2 text-xs font-medium text-red-700 dark:text-red/90">
+                                    <td
+                                        class="px-4 py-2 text-xs font-medium text-red-700 dark:text-red/90 whitespace-nowrap">
                                         Rp {{ number_format($product->price, 2, ',', '.') }}
                                     </td>
-                                    <td class="px-4 py-2 text-xs font-bold text-black dark:text-white/90">
+                                    <td class="px-4 py-2 text-xs font-medium text-black dark:text-white/90">
                                         @foreach ($product->variants as $variant)
                                             <span>{{ $variant->size ?? 'No Size' }}</span>
                                         @endforeach
@@ -110,32 +113,44 @@
                                             </span>
                                         @endforeach
                                     </td>
-
                                     <td class="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white/90">
-                                        {{ $product->category->name ?? 'No Category' }}
+                                        <div class="max-w-[200px] max-h-[50px] overflow-auto whitespace-nowrap">
+                                            {{ $product->category->name ?? 'No Category' }}
+                                            <span class="text-gray-500">(ID:
+                                                {{ $product->category->id ?? 'No ID' }})</span>
+                                        </div>
                                     </td>
-                                    <td class="px-4 py-2 text-xs text-gray-800 dark:text-white/90">
-                                        {{ $product->description ?? 'No description available' }}
+                                    <td class="px-4 py-2 text-xs text-gray-800 dark:text-white/90"
+                                        style="max-width: 200px; overflow-y: auto; max-height: 100px;">
+                                        @if (str_word_count($product->description ?? '') > 10)
+                                            <div style="max-height: 100px; overflow-y: auto;">
+                                                {{ $product->description ?? 'No description available' }}
+                                            </div>
+                                        @else
+                                            {{ $product->description ?? 'No description available' }}
+                                        @endif
                                     </td>
                                     <td
-                                        class="rounded-full px-2 py-0.5 text-xs font-medium {{ $product->is_active ? 'bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-500' : 'bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-400' }}">
+                                        class="rounded-full px-2 py-0.5 text-xs font-medium {{ $product->is_active ? ' text-success-700  dark:text-success-500' : 'text-warning-700  dark:text-warning-400' }}">
                                         {{ $product->is_active ? 'Active' : 'Inactive' }}
                                     </td>
                                     <td class="px-4 py-2 text-sm">
                                         <a href="{{ route('products.edit', $product->id) }}"
-                                            class="text-blue-500 hover:underline">
+                                            class="text-blue-500 hover:text-blue-700 transition duration-300 ease-in-out transform hover:scale-110">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        •
                                         <form class="btn-product-delete"
                                             action="{{ route('products.destroy', $product->id) }}" method="POST"
                                             style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-800">
+                                            <button type="submit"
+                                                class="text-red-600 hover:text-red-800 transition duration-300 ease-in-out transform hover:scale-110">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
+                                    </td>
+
                                 </tr>
                             @endforeach
                         </tbody>
