@@ -13,5 +13,11 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// order
-Route::post('/create-order', [OrderController::class, 'createOrder'])->middleware('auth:sanctum');
+Route::post('/webhook', [OrderController::class, 'webhookPayment']);
+
+// order (pakai sanctum)
+Route::middleware("auth:sanctum")->group(function () {
+    Route::post('/orders', [OrderController::class, 'createOrder']);
+    Route::get('/orders', [OrderController::class, 'getOrders']);
+    Route::get('/orders/{id}/pay', [OrderController::class, 'payOrder']);
+});
