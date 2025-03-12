@@ -13,7 +13,7 @@
                             <path d="M12.7083 5L7.5 10.2083L12.7083 15.4167" stroke="" stroke-width="1.5"
                                 stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        Back to dashboard
+                        {{ __('login.title') }}
                     </a>
                 </div>
                 <div class="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -48,7 +48,10 @@
                                         </svg>
                                         Sign in with Google
                                     </button>
+
+
                                 </div>
+
                             </center>
                             <div class="relative py-3 sm:py-5">
                                 <div class="absolute inset-0 flex items-center">
@@ -138,6 +141,10 @@
                                             class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600">
                                             Sign In
                                         </button>
+                                    </div>
+                                    <div>
+                                        <a href="{{ route('change.lang', ['lang' => 'id']) }}">Bahasa Indonesia</a>|
+                                        <a href="{{ route('change.lang', ['lang' => 'en']) }}">English</a>
                                     </div>
                                 </div>
                             </form>

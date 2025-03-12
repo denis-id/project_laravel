@@ -10,13 +10,22 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Xendit\Configuration;
 use Xendit\Invoice\CreateInvoiceRequest;
 use Xendit\Invoice\InvoiceApi;
 
 class OrderController extends Controller
 {
+    public function index()
+    {
+        $orders = Order::with('orderProducts.productVariant')->get();
+        return view('orders.index', ['orders' => $orders]);
+    }
+    public function show($id)
+    {
+        $order = Order::with('orderProducts.productVariant')->findOrFail($id);
+        return view('orders.show', compact('order'));
+    }
     public function getOrders(Request $request)
     {
         $user = $request->user();
@@ -26,6 +35,7 @@ class OrderController extends Controller
             'data' => $orders
         ]);
     }
+
     public function createOrder(Request $request)
     {
         $request->validate([
@@ -45,9 +55,7 @@ class OrderController extends Controller
         DB::beginTransaction();
         $user = $request->user();
 
-
         try {
-            // Buat order baru
             $order = Order::create([
                 'user_id' => $user->id,
                 'phone' => $request->phone,
@@ -59,18 +67,16 @@ class OrderController extends Controller
                 'postal_code' => $request->postal_code,
                 'country' => $request->country,
                 'status' => 'PENDING',
-                'price' => 0, 
+                'price' => 0,
                 'address_description' => $request->address_description
             ]);
 
             $totalPrice = 0;
             $orderProducts = [];
 
-            // Proses setiap produk yang dibeli
             foreach ($request->products as $product) {
                 $productVariant = ProductVariant::find($product['product_variant_id']);
 
-                // Cek stok cukup atau tidak
                 if ($productVariant->stock < $product['quantity']) {
                     DB::rollBack();
                     return response()->json([
@@ -79,14 +85,11 @@ class OrderController extends Controller
                     ], 400);
                 }
 
-                // Kurangi stok produk
                 $productVariant->decrement('stock', $product['quantity']);
 
-                // Hitung harga total untuk produk ini
                 $productPrice = $productVariant->product->price * $product['quantity'];
                 $totalPrice += $productPrice;
 
-                // Simpan ke order_products
                 $orderProducts[] = [
                     'order_id' => $order->id,
                     'product_variant_id' => $product['product_variant_id'],
@@ -97,18 +100,14 @@ class OrderController extends Controller
                 ];
             }
 
-            // Simpan data ke order_products
             OrderProduct::insert($orderProducts);
-
-            // Update harga total order
             $order->update(['price' => $totalPrice]);
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Order berhasil dibuat!',
-                // 'order_id' => $order->id
+                'message' => 'Order berhasil dibuat!'
             ], 201);
         } catch (Exception $e) {
             DB::rollBack();
@@ -118,6 +117,7 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
     public function deleteOrder(Request $request, string $id)
     {
         $user = $request->user();
@@ -146,12 +146,11 @@ class OrderController extends Controller
                 throw new Exception("Order already paid");
             }
 
-            if ($order->url) { {
-                    return response()->json([
-                        'data' => $order->url,
-                        'message' => 'Generated invoice successfully',
-                    ], 200);
-                }
+            if ($order->url) {
+                return response()->json([
+                    'data' => $order->url,
+                    'message' => 'Generated invoice successfully'
+                ], 200);
             }
 
             $total = $order->orderProducts->sum(function ($orderProduct) {
@@ -178,22 +177,23 @@ class OrderController extends Controller
 
             return response()->json([
                 'data' => $result['invoice_url'],
-                'message' => "Generated invoice successfully",
+                'message' => "Generated invoice successfully"
             ], 200);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
                 'data' => null,
-                'message' => $e->getMessage(),
+                'message' => $e->getMessage()
             ], 500);
         }
     }
+
     public function webhookPayment(Request $request)
     {
         try {
             $signatureHeader = $request->header('x-callback-token');
             $secret = env('XENDIT_WEBHOOK_TOKEN');
-            
+
             if ($signatureHeader !== $secret) {
                 return response()->json([
                     'message' => 'Unauthorized'
@@ -210,8 +210,8 @@ class OrderController extends Controller
             }
 
             $order->status = strtoupper($payload['status']);
-            $order->payment_channel = $payload['payment_channel'];
-            $order->payment_method = $payload['payment_method'];
+            $order->payment_channel = $payload['payment_channel'] ?? null;
+            $order->payment_method = $payload['payment_method'] ?? null;
             $order->save();
 
             return response()->json([
