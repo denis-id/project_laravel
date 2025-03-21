@@ -33,16 +33,22 @@
             <div class="mt-8">
                 <h2 class="text-xl font-bold text-blue-700 dark:text-blue-300">Products in this Order:</h2>
                 <ul class="space-y-4 mt-4">
-                    @foreach ($order->orderProducts as $orderProduct)
-                        <li
-                            class="bg-gradient-to-r from-blue-100 to-blue-200 p-4 rounded-lg dark:from-blue-800 dark:to-blue-900">
-                            <p><strong>Product:</strong>
-                                {{ $orderProduct->productVariant->product->name ?? 'Unknown Product' }}</p>
-                            <p><strong>Size:</strong> {{ $orderProduct->productVariant->size ?? '-' }}</p>
-                            <p><strong>Quantity:</strong> {{ $orderProduct->quantity }}</p>
-                            <p><strong>Price:</strong> Rp{{ number_format($orderProduct->price, 0, ',', '.') }}</p>
+                    @if ($order->orderProducts->isNotEmpty())
+                        @foreach ($order->orderProducts as $orderProduct)
+                            <li
+                                class="bg-gradient-to-r from-blue-100 to-blue-200 p-4 rounded-lg dark:from-blue-800 dark:to-blue-900">
+                                <p><strong>Product:</strong>
+                                    {{ $orderProduct->productVariant->product->name ?? 'Unknown Product' }}</p>
+                                <p><strong>Size:</strong> {{ $orderProduct->productVariant->size ?? '-' }}</p>
+                                <p><strong>Quantity:</strong> {{ $orderProduct->quantity }}</p>
+                                <p><strong>Price:</strong> Rp{{ number_format($orderProduct->price, 0, ',', '.') }}</p>
+                            </li>
+                        @endforeach
+                    @else
+                        <li class="bg-yellow-100 text-yellow-800 p-4 rounded-lg dark:bg-yellow-900 dark:text-yellow-200">
+                            {{ $order->products_name ?? 'No product details available' }}
                         </li>
-                    @endforeach
+                    @endif
                 </ul>
             </div>
         </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,6 +17,14 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required']
         ]);
+
+        $user = User::where("email", $request->email)->first();
+
+        if($user->role !== "ADMIN") {
+            return back()->withErrors([
+                'email' => "user doesn't have access"
+            ])->onlyInput("email");
+        }
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();

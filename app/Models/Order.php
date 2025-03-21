@@ -21,8 +21,11 @@ class Order extends Model
         "email",
         "address_description",
         "city",
-        "country"
+        "country",
+        "products_name",
+        "product_variants_size"
     ];
+    
     protected static function boot()
     {
         parent::boot();

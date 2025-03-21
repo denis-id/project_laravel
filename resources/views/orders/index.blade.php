@@ -4,7 +4,8 @@
     <div class="container mx-auto p-6">
         <h1
             class="text-2xl sm:text-3xl font-extrabold text-center bg-gradient-to-r from-blue-500 to-blue-600 text-transparent bg-clip-text animate-pulse mb-4">
-            Order List</h1>
+            Order List
+        </h1>
 
         @if (session('success'))
             <div
@@ -22,6 +23,7 @@
                 Search
             </button>
         </form>
+
         <div
             class="overflow-x-auto bg-gradient-to-r from-white to-gray-100 shadow-md rounded-xl dark:from-gray-800 dark:to-gray-900">
             <table class="min-w-full border-collapse">
@@ -32,10 +34,10 @@
                         <th class="py-2 px-4">Name</th>
                         <th class="py-2 px-4">Email</th>
                         <th class="py-2 px-4">Total Price</th>
+                        <th class="py-2 px-4">Products</th> <!-- Tambahan kolom produk -->
                         <th class="py-2 px-4">Status</th>
                         <th class="py-2 px-4">Payment Info</th>
                         <th class="py-2 px-4">Detail</th>
-                        <th class="py-2 px-4">Products</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,6 +48,9 @@
                             <td class="py-2 px-4 dark:text-gray-200">{{ $order->first_name }} {{ $order->last_name }}</td>
                             <td class="py-2 px-4 dark:text-gray-200">{{ $order->email }}</td>
                             <td class="py-2 px-4 dark:text-gray-200">Rp{{ number_format($order->price, 0, ',', '.') }}</td>
+                            <td class="py-2 px-4 dark:text-gray-200">
+                                {{ $order->products_name ?? '-' }} <!-- Menampilkan produk -->
+                            </td>
                             <td class="py-2 px-4">
                                 <span
                                     class="px-3 py-1 rounded-full text-white text-xs {{ $order->status === 'PAID' ? 'bg-gradient-to-r from-green-500 to-green-700' : 'bg-gradient-to-r from-yellow-500 to-yellow-700' }}">
@@ -69,30 +74,14 @@
                             </td>
                             <td class="py-2 px-4 text-center">
                                 <a href="{{ route('orders.show', $order->id) }}"
-                                    class="text-blue-500 hover:underline text-sm dark:text-blue-300">Show Details</a>
-                            </td>
-                            <td class="py-2 px-4 dark:text-gray-200">
-                                <div class="space-y-2">
-                                    @foreach ($order->orderProducts as $orderProduct)
-                                        <div
-                                            class="bg-gradient-to-r from-blue-100 to-blue-200 p-2 rounded-lg dark:from-blue-800 dark:to-blue-900">
-                                            <p class="font-semibold">
-                                                {{ $orderProduct->productVariant->product->name ?? 'Unknown Product' }}</p>
-                                            <p class="text-sm text-gray-700 dark:text-gray-300">Size:
-                                                {{ $orderProduct->productVariant->size ?? '-' }}</p>
-                                            <p class="text-sm text-gray-700 dark:text-gray-300">Quantity:
-                                                {{ $orderProduct->quantity }}</p>
-                                            <p class="text-sm text-gray-700 dark:text-gray-300">Price:
-                                                Rp{{ number_format($orderProduct->price, 0, ',', '.') }}</p>
-                                        </div>
-                                    @endforeach
-                                </div>
+                                    class="text-blue-500 hover:underline text-sm dark:text-blue-300">Order Details</a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center py-6 text-gray-500 text-sm dark:text-gray-400">No Orders
-                                Available...</td>
+                            <td colspan="8" class="text-center py-6 text-gray-500 text-sm dark:text-gray-400">
+                                No Orders Available...
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>

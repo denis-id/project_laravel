@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('city');
             $table->string('postal_code');
             $table->string('country');
+            $table->string('products_name', 500)->nullable();
             $table->timestamps();
         });
     }

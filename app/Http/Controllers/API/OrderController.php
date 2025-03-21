@@ -8,6 +8,7 @@ use App\Models\OrderProduct;
 use App\Models\ProductVariant;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Xendit\Configuration;
@@ -16,19 +17,30 @@ use Xendit\Invoice\InvoiceApi;
 
 class OrderController extends Controller
 {
+
     public function index()
     {
-        $orders = Order::with('orderProducts.productVariant')->get();
-        return view('orders.index', ['orders' => $orders]);
+        $user = Auth::user();
+        $orders = Order::where('user_id', $user->id)->with('orderProducts.productVariant')->get();
+        return view('orders.index', compact('orders'));
+        // return response()->json(['orders' => $orders]);
     }
-    public function show($id)
+
+      public function getOrders(Request $request)
     {
-        $order = Order::with('orderProducts.productVariant')->findOrFail($id);
-        return view('orders.show', compact('order'));
-    }
-    public function getOrders(Request $request)
-    {
+        Log::info('Authorization Header:', [$request->header('Authorization')]);
+        Log::info('User from request:', [$request->user()]);
+        
         $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not authenticated'
+            ], 401);
+        }
+        
+        Log::info("Fetching orders for user: " . $user->id);
+        
         $orders = Order::where('user_id', $user->id)->with('orderProducts.productVariant')->get();
         return response()->json([
             'success' => true,
@@ -36,111 +48,120 @@ class OrderController extends Controller
         ]);
     }
 
-    public function createOrder(Request $request)
+
+    public function show($id)
     {
-        $request->validate([
-            'phone' => 'required|string',
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'email' => 'required|email',
-            'address' => 'required|string',
-            'city' => 'required|string',
-            'postal_code' => 'required|string',
-            'country' => 'required|string',
-            'products' => 'required|array',
-            'products.*.product_variant_id' => 'required|exists:product_variants,id',
-            'products.*.quantity' => 'required|integer|min:1',
-        ]);
-
-        DB::beginTransaction();
-        $user = $request->user();
-
-        try {
-            $order = Order::create([
-                'user_id' => $user->id,
-                'phone' => $request->phone,
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'email' => $request->email,
-                'address' => $request->address,
-                'city' => $request->city,
-                'postal_code' => $request->postal_code,
-                'country' => $request->country,
-                'status' => 'PENDING',
-                'price' => 0,
-                'address_description' => $request->address_description
-            ]);
-
-            $totalPrice = 0;
-            $orderProducts = [];
-
-            foreach ($request->products as $product) {
-                $productVariant = ProductVariant::find($product['product_variant_id']);
-
-                if ($productVariant->stock < $product['quantity']) {
-                    DB::rollBack();
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Stok untuk varian {$productVariant->variant_name} tidak mencukupi. Stok tersedia: {$productVariant->stock}"
-                    ], 400);
-                }
-
-                $productVariant->decrement('stock', $product['quantity']);
-
-                $productPrice = $productVariant->product->price * $product['quantity'];
-                $totalPrice += $productPrice;
-
-                $orderProducts[] = [
-                    'order_id' => $order->id,
-                    'product_variant_id' => $product['product_variant_id'],
-                    'quantity' => $product['quantity'],
-                    'price' => $productPrice,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-
-            OrderProduct::insert($orderProducts);
-            $order->update(['price' => $totalPrice]);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Order berhasil dibuat!'
-            ], 201);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-            ], 500);
-        }
+        $user = Auth::user();
+        $order = Order::where('user_id', $user->id)->with('orderProducts.productVariant')->findOrFail($id);
+        return view('orders.show', compact('order'));
+        // return response()->json(['order' => $order]);
     }
 
-    public function deleteOrder(Request $request, string $id)
+    public function createOrder(Request $request)
+{
+    $user = Auth::user();
+    if (!$user) {
+        return response()->json(['message' => 'Unauthenticated.'], 401);
+    }
+
+    $request->validate([
+        'phone' => 'required|string',
+        'first_name' => 'required|string',
+        'last_name' => 'required|string',
+        'email' => 'required|email',
+        'address' => 'required|string',
+        'city' => 'required|string',
+        'postal_code' => 'required|string',
+        'country' => 'required|string',
+        'products' => 'required|array',
+        'products.*.product_variant_id' => 'required|exists:product_variants,id',
+        'products.*.quantity' => 'required|integer|min:1',
+    ]);
+
+    DB::beginTransaction();
+    try {
+        $order = Order::create([
+            'user_id' => $user->id,
+            'phone' => $request->phone,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'address' => $request->address,
+            'city' => $request->city,
+            'postal_code' => $request->postal_code,
+            'country' => $request->country,
+            'status' => 'PENDING',
+            'price' => 0,
+            'total' => 0,
+            'address_description' => $request->address_description ?? null,
+        ]);
+
+        $totalPrice = 0;
+        $productsName = [];
+        $orderProducts = [];
+
+        foreach ($request->products as $product) {
+            $productVariant = ProductVariant::with('product')->find($product['product_variant_id']);
+            if (!$productVariant || $productVariant->stock < $product['quantity']) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Stok tidak mencukupi untuk salah satu produk.'
+                ], 400);
+            }
+
+            $productVariant->decrement('stock', $product['quantity']);
+            $price = $productVariant->product->price;
+            $subtotal = $price * $product['quantity']; // ✅ Pastikan subtotal dihitung
+
+            $totalPrice += $subtotal;
+            $productsName[] = $productVariant->product->name;
+
+            $orderProducts[] = [
+                'order_id' => $order->id,
+                'product_variant_id' => $product['product_variant_id'],
+                'quantity' => $product['quantity'],
+                'price' => $price,  // Harga per item
+                'subtotal' => $subtotal, // ✅ Tambahkan subtotal
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        OrderProduct::insert($orderProducts);
+        $order->update([
+            'price' => $totalPrice,
+            'total' => $totalPrice,
+            'products_name' => implode(', ', $productsName),
+        ]);
+
+        DB::commit();
+        return response()->json(['message' => 'Order successfully created!', 'success' => true, 'order' => $order], 201);
+    } catch (Exception $e) {
+        DB::rollBack();
+        return response()->json(['success' => false, 'message' => 'Failed to create order: ' . $e->getMessage()], 500);
+    }
+}
+
+    public function deleteOrder($id)
     {
-        $user = $request->user();
+        $user = Auth::user();
         $order = Order::where('user_id', $user->id)->findOrFail($id);
         $order->delete();
+
         return response()->json([
             'success' => true,
-            'message' => 'Delete order success'
+            'message' => 'Order deleted successfully'
         ], 200);
     }
 
-    public function payOrder(Request $request, string $id)
+    public function payOrder($id)
     {
         DB::beginTransaction();
-        try {
-            $user = $request->user();
-            $order = Order::findOrFail($id);
 
-            if ($order->user_id !== $user->id) {
-                return response()->json([
-                    'message' => "You are not allowed to access this data"
-                ], 401);
-            }
+        try {
+            $user = Auth::user();
+            $order = Order::where('user_id', $user->id)->findOrFail($id);
 
             if ($order->status === "PAID") {
                 throw new Exception("Order already paid");
@@ -149,19 +170,16 @@ class OrderController extends Controller
             if ($order->url) {
                 return response()->json([
                     'data' => $order->url,
-                    'message' => 'Generated invoice successfully'
+                    'message' => 'Invoice already generated'
                 ], 200);
             }
 
-            $total = $order->orderProducts->sum(function ($orderProduct) {
-                return $orderProduct->quantity * $orderProduct->productVariant->product->price;
-            });
+            $total = $order->orderProducts->sum(fn ($op) => $op->quantity * $op->productVariant->product->price);
 
-            Configuration::setXenditKey(env("XENDIT_API_KEY"));
-
+            Configuration::setXenditKey(env('XENDIT_API_KEY'));
             $apiInstance = new InvoiceApi();
-            $create_invoice_request = new CreateInvoiceRequest([
-                'external_id' => (string)$order->id,
+            $createInvoiceRequest = new CreateInvoiceRequest([
+                'external_id' => (string) $order->id,
                 'description' => 'Invoice for order ' . $order->id,
                 'amount' => $total,
                 'invoice_duration' => 172800,
@@ -169,7 +187,7 @@ class OrderController extends Controller
                 'reminder_time' => 1
             ]);
 
-            $result = $apiInstance->createInvoice($create_invoice_request);
+            $result = $apiInstance->createInvoice($createInvoiceRequest);
             $order->url = $result['invoice_url'];
             $order->save();
 
@@ -177,16 +195,44 @@ class OrderController extends Controller
 
             return response()->json([
                 'data' => $result['invoice_url'],
-                'message' => "Generated invoice successfully"
+                'message' => 'Invoice generated successfully'
             ], 200);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
-                'data' => null,
-                'message' => $e->getMessage()
+                'message' => 'Failed to generate invoice: ' . $e->getMessage()
             ], 500);
         }
     }
+
+    public function updateStatus(Request $request, $id)
+{
+    $order = Order::find($id);
+
+    if (!$order) {
+        return response()->json(['message' => 'Pesanan tidak ditemukan'], 404);
+    }
+
+    $request->validate([
+        'status' => 'required|string',
+    ]);
+
+    $order->status = $request->status;
+    $order->save();
+
+    return response()->json(['message' => 'Status pesanan diperbarui', 'order' => $order]);
+}
+
+public function getOrderById($id)
+{
+    $order = Order::find($id);
+
+    if (!$order) {
+        return response()->json(['message' => 'Pesanan tidak ditemukan'], 404);
+    }
+
+    return response()->json(['order' => $order]);
+}
 
     public function webhookPayment(Request $request)
     {
@@ -195,35 +241,27 @@ class OrderController extends Controller
             $secret = env('XENDIT_WEBHOOK_TOKEN');
 
             if ($signatureHeader !== $secret) {
-                return response()->json([
-                    'message' => 'Unauthorized'
-                ], 401);
+                return response()->json(['message' => 'Unauthorized'], 401);
             }
 
             $payload = $request->all();
             $order = Order::findOrFail($payload['external_id']);
 
             if (!$order) {
-                return response()->json([
-                    'message' => 'Order not found'
-                ], 404);
+                return response()->json(['message' => 'Order not found'], 404);
             }
 
+            Log::info("Webhook Data:", $payload);
+
             $order->status = strtoupper($payload['status']);
-            $order->payment_channel = $payload['payment_channel'] ?? null;
-            $order->payment_method = $payload['payment_method'] ?? null;
+            $order->payment_channel = $payload['payment_channel'] ?? 'UNKNOWN';
+            $order->payment_method = $payload['payment_method'] ?? 'UNKNOWN';
             $order->save();
 
-            return response()->json([
-                'message' => 'Order status updated',
-                'status' => 200
-            ]);
+            return response()->json(['message' => 'Order status updated'], 200);
         } catch (Exception $e) {
             Log::error($e->getMessage());
-
-            return response()->json([
-                'message' => $e->getMessage()
-            ], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }

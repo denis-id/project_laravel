@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
     <div
-        class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] shadow-lg transition-transform duration-300 hover:scale-105 max-w-full overflow-x-auto">
+        class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] shadow-lg   max-w-full overflow-x-auto">
         <div
             class="px-5 py-4 sm:px-6 sm:py-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-t-2xl flex justify-between items-center">
             <h3
@@ -83,8 +83,7 @@
                             <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Image</th>
                             <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Name</th>
                             <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Price</th>
-                            <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Size</th>
-                            <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Stock</th>
+                            <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Size & Stock</th>
                             <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Category</th>
                             <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Description</th>
                             <th class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Actions</th>
@@ -120,18 +119,18 @@
                                 <td class="px-4 py-2 text-xs font-medium text-red-700 dark:text-red/90 whitespace-nowrap">
                                     Rp {{ number_format($product->price, 2, ',', '.') }}
                                 </td>
-                                <td class="px-4 py-2 text-xs font-medium text-black dark:text-white/90">
-                                    @foreach ($product->variants as $variant)
-                                        <span>{{ $variant->size ?? 'No Size' }}</span>
-                                    @endforeach
-                                </td>
                                 <td class="px-4 py-2 text-xs font-bold">
-                                    @foreach ($product->variants as $variant)
-                                        <span
-                                            class="{{ $variant->stock < 20 ? 'text-red-600 dark:text-orange/90' : 'text-blue-500 dark:text-blue/90' }}">
-                                            {{ $variant->stock ?? 'Out of stock' }}
-                                        </span>
-                                    @endforeach
+                                    <ul class="text-left">
+                                        @foreach ($product->variants as $variant)
+                                            <li class="flex items-center gap-2">
+                                                <span class="font-semibold">{{ $variant->size ?? 'No Size' }}:</span>
+                                                <span
+                                                    class="{{ $variant->stock < 20 ? 'text-red-600 dark:text-orange-500' : 'text-blue-500 dark:text-blue-300' }}">
+                                                    {{ $variant->stock ?? 'Out of stock' }}
+                                                </span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 </td>
                                 <td class="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white/90">
                                     <div class="max-w-[200px] max-h-[50px] overflow-auto whitespace-nowrap">
