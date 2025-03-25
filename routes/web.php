@@ -10,6 +10,10 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Route;
 
+Route::get("/", function() {
+    return redirect("/admin");
+});
+
 // Rute untuk admin, dengan prefix 'admin' dan middleware 'auth'
 Route::prefix('admin')->middleware('auth')->group(function () {
     // Dashboard utama

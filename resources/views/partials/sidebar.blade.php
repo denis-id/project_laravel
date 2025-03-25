@@ -4,14 +4,14 @@
     <!-- SIDEBAR HEADER -->
     <div :class="sidebarToggle ? 'justify-center' : 'justify-between'"
         class="sidebar-header flex items-center gap-2 pb-7 pt-8">
-        <a href="index.html">
+        <a href="/">
             <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
-                <img class="dark:hidden" src="{{ asset('images/logo/KOHI.png') }} alt="Logo" />
-                <img class="hidden dark:block" src="{{ asset('images/logo/KOHI.png') }} alt="Logo" />
+                <img class="dark:hidden" src="{{ asset('images/logo/KOHI.png') }}" alt="Logo" />
+                <img class="hidden dark:block" src="{{ asset('images/logo/KOHI.png') }}" alt="Logo" />
             </span>
 
-            <img class="logo-icon" :class="sidebarToggle ? 'lg:block' : 'hidden'" src="./images/logo/KOHI.png"
-                alt="Logo" />
+            <img class="logo-icon" :class="sidebarToggle ? 'lg:block' : 'hidden'"
+                src="{{ asset('images/logo/KOHI.png') }}" alt="Logo" />
         </a>
     </div>
     <!-- SIDEBAR HEADER -->
@@ -73,7 +73,7 @@
                     <li>
                         <a href="{{ route('products.index') }}"
                             @click="selected = (selected === 'Profile' ? '' : 'Profile')"
-                            class="menu-item group {{ request()->routeIs('categories.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
+                            class="menu-item group {{ request()->routeIs('products.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-chart-bar-stacked">
@@ -115,7 +115,7 @@
                     <li>
                         <a href="{{ route('articles.index') }}"
                             @click="selected = (selected === 'Articles' ? '' : 'Articles')"
-                            class="flex items-center p-3 rounded-lg transition-colors duration-200 group {{ request()->routeIs('articles.*') ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-blue-100' }}">
+                            class="flex items-center p-3 rounded-lg transition-colors duration-200 group {{ request()->routeIs('articles.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-file-text">

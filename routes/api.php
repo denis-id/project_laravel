@@ -8,6 +8,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ProductVariantController;
+use App\Http\Controllers\ChatbotController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -42,5 +43,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders', [OrderController::class, 'createOrder']);
     Route::get('/orders/{id}/pay', [OrderController::class, 'payOrder']);
     Route::delete('/orders/{id}', [OrderController::class, 'deleteOrder']);
-    Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']);
 });
+Route::post('/chatbot', [ChatbotController::class, 'chat']);

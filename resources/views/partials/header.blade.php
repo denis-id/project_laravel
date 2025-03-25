@@ -130,7 +130,7 @@
                                 <a class="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
                                     href="#">
                                     <span class="relative block w-full h-10 rounded-full z-1 max-w-10">
-                                        <img src="./images/user/user-02.jpg" alt="User"
+                                        <img src="{{ asset('images/logo/KOHI.png') }}" alt="User"
                                             class="overflow-hidden rounded-full" />
                                         <span
                                             class="absolute bottom-0 right-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white bg-success-500 dark:border-gray-900"></span>

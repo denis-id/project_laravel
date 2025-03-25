@@ -160,13 +160,13 @@
                 </div>
             </div>
 
-            <div class="relative items-center hidden w-full h-full bg-brand-950 dark:bg-white/5 lg:grid lg:w-1/2">
+            <div class="relative items-center hidden w-full h-full bg-white-950 dark:bg-white/5 lg:grid lg:w-1/2">
                 <div class="flex items-center justify-center z-1">
                     <!-- ===== Common Grid Shape Start ===== -->
                     <include src="./partials/common-grid-shape.html"></include>
                     <div class="flex flex-col items-center max-w-xs">
                         <a href="index.html" class="block mb-4">
-                            <img src="" alt="Logo" />
+                            <img src="{{ asset('/images/logo/kohiMenu.png') }}" alt="Logo" />
                         </a>
                         <p class="text-center text-gray-400 dark:text-white/60">
                             Kohi Coffee

@@ -10,9 +10,14 @@ use Illuminate\Support\Facades\Validator;
 class ArticleController extends Controller
 {
     // Menampilkan daftar artikel
-    public function index()
+    public function index(Request $request)
     {
-        $articles = Articles::all();
+        $search = $request->input('search');
+        $articles = Articles::when($search, function ($query, $search) {
+            return $query->where('title', 'like', "%{$search}%")
+                         ->orWhere('author', 'like', "%{$search}%");
+        })->latest()->get();
+      
         return view('articles.index', compact('articles'));
     }
 

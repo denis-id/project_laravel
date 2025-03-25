@@ -39,8 +39,7 @@
         <img src="{{ $product->image }}" alt="{{ $product->name }}">
         <p><strong>Name:</strong> {{ $product->name }}</p>
         <p><strong>Status:</strong> {{ $product->is_active ? 'Active' : 'Inactive' }}</p>
-        <p><strong>Category:</strong> {{ $product->category->name }} (ID: {{ $product->category->id }})</p>
-        <p><strong>Price:</strong> Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+        <p><strong>Category:</strong> {{ $product->category->name }}</p>
         <p><strong>Description:</strong> {{ $product->description }}</p>
 
         @foreach ($product->variants as $variant)
@@ -48,6 +47,7 @@
                 <h3>Variants:</h3>
                 <p><strong>Size:</strong> {{ $variant['size'] }}</p>
                 <p><strong>Stock:</strong> {{ $variant['stock'] }}</p>
+                <p><strong>Price:</strong> {{ $variant['price'] }}</p>
             </div>
         @endforeach
     </div>

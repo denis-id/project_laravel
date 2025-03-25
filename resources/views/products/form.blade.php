@@ -48,7 +48,7 @@
                     </div>
 
                     <!-- Price Field -->
-                    <div class="mb-5">
+                    {{-- <div class="mb-5">
                         <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                             Price
                         </label>
@@ -62,7 +62,7 @@
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Category Field -->
                     <div class="mb-5">
@@ -119,6 +119,9 @@
                                             <input type="number" name="variants[{{ $index }}][stock]"
                                                 placeholder="Stock" value="{{ $variant->stock }}"
                                                 class="dark:bg-gray-800 h-12 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-800 shadow-sm placeholder:text-gray-400 focus:border-purple-500 focus:ring focus:ring-purple-500/20 dark:border-gray-700 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-purple-500">
+                                            <input type="number" placeholder="Rp" id="price"
+                                                name="variants[{{ $index }}][price]" value="{{ $variant->price }}"
+                                                class="dark:bg-gray-800 h-12 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-800 shadow-sm placeholder:text-gray-400 focus:border-purple-500 focus:ring focus:ring-purple-500/20 dark:border-gray-700 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-purple-500">
                                             <button type="button"
                                                 class="remove-variant bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200">Remove</button>
                                         </div>
@@ -130,6 +133,8 @@
                                         <input type="text" name="variants[0][size]" placeholder="Size"
                                             class="dark:bg-gray-800 h-12 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-800 shadow-sm placeholder:text-gray-400 focus:border-purple-500 focus:ring focus:ring-purple-500/20 dark:border-gray-700 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-purple-500">
                                         <input type="number" name="variants[0][stock]" placeholder="Stock"
+                                            class="dark:bg-gray-800 h-12 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-800 shadow-sm placeholder:text-gray-400 focus:border-purple-500 focus:ring focus:ring-purple-500/20 dark:border-gray-700 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-purple-500">
+                                        <input type="number" id="price" name="variants[0][price]" placeholder="Rp"
                                             class="dark:bg-gray-800 h-12 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-800 shadow-sm placeholder:text-gray-400 focus:border-purple-500 focus:ring focus:ring-purple-500/20 dark:border-gray-700 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-purple-500">
                                         <button type="button"
                                             class="remove-variant bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200">Remove</button>
@@ -230,6 +235,7 @@
                 <div class="flex gap-4">
                     <input type="text" name="variants[${variantIndex}][size]" placeholder="Size" class="dark:bg-dark-900 h-11 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
                     <input type="number" name="variants[${variantIndex}][stock]" placeholder="Stock" class="dark:bg-dark-900 h-11 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
+                    <input type="number" name="variants[${variantIndex}][price]" placeholder="Rp" class="dark:bg-dark-900 h-11 w-1/2 rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800">
                     <button type="button" class="remove-variant bg-red-500 text-white px-4 py-2 rounded-lg">Remove</button>
                 </div>
             </div>

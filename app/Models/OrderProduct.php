@@ -10,6 +10,7 @@ class OrderProduct extends Model
         "order_id",
         "product_variant_id",
         "quantity",
+        "variant_name",
         "price"
     ];
 

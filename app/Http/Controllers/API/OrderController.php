@@ -111,8 +111,8 @@ class OrderController extends Controller
             }
 
             $productVariant->decrement('stock', $product['quantity']);
-            $price = $productVariant->product->price;
-            $subtotal = $price * $product['quantity']; // ✅ Pastikan subtotal dihitung
+            $price = $productVariant->price;
+            $subtotal = $price * $product['quantity']; 
 
             $totalPrice += $subtotal;
             $productsName[] = $productVariant->product->name;
@@ -121,8 +121,8 @@ class OrderController extends Controller
                 'order_id' => $order->id,
                 'product_variant_id' => $product['product_variant_id'],
                 'quantity' => $product['quantity'],
-                'price' => $price,  // Harga per item
-                'subtotal' => $subtotal, // ✅ Tambahkan subtotal
+                'price' => $price,  
+                'subtotal' => $subtotal, 
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -174,8 +174,10 @@ class OrderController extends Controller
                 ], 200);
             }
 
-            $total = $order->orderProducts->sum(fn ($op) => $op->quantity * $op->productVariant->product->price);
+            $total = $order->orderProducts->sum(fn ($op) => $op->quantity * $op->productVariant->price);
 
+        //    $total = 0;
+            
             Configuration::setXenditKey(env('XENDIT_API_KEY'));
             $apiInstance = new InvoiceApi();
             $createInvoiceRequest = new CreateInvoiceRequest([
@@ -186,11 +188,12 @@ class OrderController extends Controller
                 'currency' => 'IDR',
                 'reminder_time' => 1
             ]);
-
+            
             $result = $apiInstance->createInvoice($createInvoiceRequest);
             $order->url = $result['invoice_url'];
             $order->save();
 
+            
             DB::commit();
 
             return response()->json([
@@ -204,24 +207,6 @@ class OrderController extends Controller
             ], 500);
         }
     }
-
-    public function updateStatus(Request $request, $id)
-{
-    $order = Order::find($id);
-
-    if (!$order) {
-        return response()->json(['message' => 'Pesanan tidak ditemukan'], 404);
-    }
-
-    $request->validate([
-        'status' => 'required|string',
-    ]);
-
-    $order->status = $request->status;
-    $order->save();
-
-    return response()->json(['message' => 'Status pesanan diperbarui', 'order' => $order]);
-}
 
 public function getOrderById($id)
 {

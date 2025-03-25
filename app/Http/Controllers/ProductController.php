@@ -75,20 +75,19 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|unique:products,name,' . $id,
             'description' => 'nullable|string',
-            'price' => 'required|numeric',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'category_id' => 'required|exists:categories,id',
             'is_active' => 'boolean',
             'variants' => 'nullable|array',
             'variants.*.size' => 'required|string',
             'variants.*.stock' => 'required|integer',
+            'variants.*price' => 'required|integer',
         ]);
 
         try {
             $product = Product::findOrFail($id);
             $product->name = $request->name;
             $product->description = $request->description;
-            $product->price = $request->price;
             $product->category_id = $request->category_id;
             $product->is_active = $request->is_active ?? false;
             $product->save();
@@ -116,6 +115,7 @@ class ProductController extends Controller
                     $productVariant->product_id = $product->id;
                     $productVariant->size = $variant['size'];
                     $productVariant->stock = $variant['stock'];
+                    $productVariant->price = $variant['price'];
                     $productVariant->save();
                 }
             }
@@ -145,13 +145,13 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|unique:products,name,' . $id,
             'description' => 'nullable|string',
-            'price' => 'required|numeric',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'category_id' => 'required|exists:categories,id',
             'is_active' => 'boolean',
             'variants' => 'nullable|array',
             'variants.*.size' => 'required|string',
             'variants.*.stock' => 'required|integer',
+            'variants.*.price' => 'required|integer',
         ]);
     }
 

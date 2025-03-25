@@ -2,15 +2,12 @@
 
 @section('content')
     <div
-        class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] shadow-lg transition-transform duration-300 hover:scale-105 max-w-full overflow-hidden">
+        class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] shadow-lg transition-transform duration-300 max-w-full overflow-hidden">
         <div
-            class="px-5 py-4 sm:px-6 sm:py-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-t-2xl flex flex-col sm:flex-row justify-between items-center">
+            class="px-5 py-4 sm:px-6 sm:py-5 bg-gradient-to-r from-black to-red-800 rounded-t-2xl flex justify-between items-center">
             <h3
                 class="text-2xl sm:text-3xl font-extrabold text-center bg-gradient-to-r from-white to-red-600 text-transparent bg-clip-text animate-pulse">
                 Categories</h3>
-            <a href="{{ route('categories.create') }}"
-                class="bg-green-500 hover:bg-green-600 text-white font-medium px-4 py-2 rounded-lg shadow-md transition">+
-                Add Category</a>
         </div>
         <div class="border-t border-gray-100 p-5 dark:border-gray-800 sm:p-6">
             <div class="left">
@@ -104,6 +101,9 @@
                 </tbody>
             </table>
         </div>
+        <a href="{{ route('categories.create') }}"
+            class="fixed bottom-4 right-6 bg-green-500 hover:bg-green-600 text-white font-medium px-4 py-2 rounded-lg shadow-md transition hover:scale-110">+
+            Add Category</a>
     </div>
 @endsection
 

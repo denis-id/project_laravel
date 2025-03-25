@@ -19,7 +19,6 @@ class ProductController extends Controller
                 'products.is_active', 
                 'products.description', 
                 'products.category_id', 
-                'products.price', 
                 'products.images', 
                 'categories.name as category_name'
             )
@@ -37,7 +36,7 @@ class ProductController extends Controller
     {
         $product = Product::with('variants')->select(
             'products.id', 'products.name', 'products.is_active', 'products.description', 
-            'products.category_id', 'products.price', 'products.images', 'categories.name as category_name'
+            'products.category_id', 'products.images', 'categories.name as category_name'
         )
         ->join('categories', 'categories.id', '=', 'products.category_id')
         ->findOrFail($id);

@@ -33,6 +33,10 @@ const map01 = () => {
           name: "United States",
           coords: [37.0902, -95.7129],
         },
+        {
+          name: "Indonesia",
+          coords: [0.7893, 113.9213],
+        },
       ],
 
       markerStyle: {
