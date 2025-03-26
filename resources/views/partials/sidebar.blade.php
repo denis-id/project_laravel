@@ -76,12 +76,11 @@
                             class="menu-item group {{ request()->routeIs('products.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="lucide lucide-chart-bar-stacked">
-                                <path d="M11 13v4" />
-                                <path d="M15 5v4" />
-                                <path d="M3 3v16a2 2 0 0 0 2 2h16" />
-                                <rect x="7" y="13" width="9" height="4" rx="1" />
-                                <rect x="7" y="5" width="12" height="4" rx="1" />
+                                stroke-linejoin="round" class="lucide lucide-box">
+                                <path
+                                    d="M21 16V8a2 2 0 0 0-1-1.73L13 2.27a2 2 0 0 0-2 0L4 6.27A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73Z" />
+                                <path d="m3.3 7 8.7 5 8.7-5" />
+                                <path d="M12 22V12" />
                             </svg>
                             <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
                                 Products
@@ -97,12 +96,12 @@
                             class="menu-item group {{ request()->routeIs('orders.*') ? 'menu-item-active' : 'menu-item-inactive' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="lucide lucide-chart-bar-stacked">
-                                <path d="M11 13v4" />
-                                <path d="M15 5v4" />
-                                <path d="M3 3v16a2 2 0 0 0 2 2h16" />
-                                <rect x="7" y="13" width="9" height="4" rx="1" />
-                                <rect x="7" y="5" width="12" height="4" rx="1" />
+                                stroke-linejoin="round" class="lucide lucide-clipboard-list">
+                                <path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
+                                <path d="M9 6h6" />
+                                <path d="M9 10h6" />
+                                <path d="M9 14h6" />
+                                <path d="M9 18h6" />
                             </svg>
                             <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
                                 Orders
@@ -151,32 +150,6 @@
                         </a>
                     </li>
                     <!-- Menu users -->
-
-                    <!-- Menu Item Invoice -->
-                    <li>
-                        <a href="invoice.html" @click="selected = (selected === 'Invoice' ? '':'Invoice')"
-                            class="menu-item group"
-                            :class="(selected === 'Invoice') && (page === 'invoice') ? 'menu-item-active' :
-                            'menu-item-inactive'">
-                            <svg :class="(selected === 'Invoice') && (page === 'invoice') ? 'menu-item-icon-active' :
-                            'menu-item-icon-inactive'"
-                                width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M19.5 19.75C19.5 20.9926 18.4926 22 17.25 22H6.75C5.50736 22 4.5 20.9926 4.5 19.75V9.62105C4.5 9.02455 4.73686 8.45247 5.15851 8.03055L10.5262 2.65951C10.9482 2.23725 11.5207 2 12.1177 2H17.25C18.4926 2 19.5 3.00736 19.5 4.25V19.75ZM17.25 20.5C17.6642 20.5 18 20.1642 18 19.75V4.25C18 3.83579 17.6642 3.5 17.25 3.5H12.248L12.2509 7.49913C12.2518 8.7424 11.2442 9.75073 10.0009 9.75073H6V19.75C6 20.1642 6.33579 20.5 6.75 20.5H17.25ZM7.05913 8.25073L10.7488 4.55876L10.7509 7.5002C10.7512 7.91462 10.4153 8.25073 10.0009 8.25073H7.05913ZM8.25 14.5C8.25 14.0858 8.58579 13.75 9 13.75H15C15.4142 13.75 15.75 14.0858 15.75 14.5C15.75 14.9142 15.4142 15.25 15 15.25H9C8.58579 15.25 8.25 14.9142 8.25 14.5ZM8.25 17.5C8.25 17.0858 8.58579 16.75 9 16.75H12C12.4142 16.75 12.75 17.0858 12.75 17.5C12.75 17.9142 12.4142 18.25 12 18.25H9C8.58579 18.25 8.25 17.9142 8.25 17.5Z"
-                                    fill="" />
-                            </svg>
-
-                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                                Invoice
-                            </span>
-                        </a>
-                    </li>
-                    <!-- Menu Item Invoice -->
-                </ul>
-            </div>
-            <div>
-                <ul class="mb-6 flex flex-col gap-4">
                 </ul>
             </div>
         </nav>

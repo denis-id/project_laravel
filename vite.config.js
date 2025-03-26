@@ -8,4 +8,16 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        host: "0.0.0.0", 
+        port: 5173, 
+        cors: {
+            origin: "*", 
+            methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            allowedHeaders: ["Content-Type", "Authorization"],
+        },
+        hmr: {
+            host: "localhost", 
+        },
+    },
 });

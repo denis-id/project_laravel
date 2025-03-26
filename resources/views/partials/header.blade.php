@@ -33,8 +33,8 @@
             <!-- Hamburger Toggle BTN -->
 
             <a href="index.html" class="lg:hidden">
-                <img class="dark:hidden" src="./images/logo/logo.svg" alt="Logo" />
-                <img class="hidden dark:block" src="./images/logo/logo-dark.svg" alt="Logo" />
+                <img class="dark:hidden" src="{{ asset('images/logo/KOHI.png') }}" alt="Logo" />
+                <img class="hidden dark:block" src="{{ asset('images/logo/KOHI.png') }}" alt="Logo" />
             </a>
 
             <!-- Application nav menu button -->
@@ -374,7 +374,7 @@
                 <a class="flex items-center text-gray-700 dark:text-gray-400" href="#"
                     @click.prevent="dropdownOpen = ! dropdownOpen">
                     <span class="mr-3 overflow-hidden rounded-full h-11 w-11">
-                        <img src="./images/user/owner.jpg" alt="User" />
+                        <img src="{{ asset('images/user/profilepict.jpeg') }}" alt="User" />
                     </span>
 
                     <span class="block mr-1 font-medium text-theme-sm"> {{ Auth::user()->name }} </span>

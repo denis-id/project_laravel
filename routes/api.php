@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\ArticleController;
+use App\Http\Controllers\API\ArticleController;
 use App\Http\Controllers\API\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

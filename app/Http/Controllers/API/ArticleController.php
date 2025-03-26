@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Articles;
@@ -16,10 +16,9 @@ class ArticleController extends Controller
             ->orderBy('published_at', 'desc')
             ->get();
         
-        return response()->json($articles); // Mengembalikan semua artikel dalam format JSON
+        return response()->json($articles); 
     }
 
-    // Menampilkan artikel berdasarkan slug
     public function getArticleBySlug($slug)
     {
         $article = Articles::select('id', 'slug', 'title', 'content', 'keywords', 'meta_description', 'excerpt', 'published_at', 'author', 'is_featured', 'read_time', 'image_url')
@@ -29,10 +28,10 @@ class ArticleController extends Controller
         if (!$article) {
             return response()->json([
                 'message' => 'Article not found'
-            ], 404); // Mengembalikan error jika artikel tidak ditemukan
+            ], 404); 
         }
 
-        return response()->json($article); // Mengembalikan artikel dalam format JSON
+        return response()->json($article); 
     }
 
      // Menampilkan detail artikel berdasarkan slug
@@ -49,19 +48,17 @@ class ArticleController extends Controller
          return response()->json($article);
      } 
 
-    // Mendapatkan artikel terkait (selain yang sedang dibaca)
     public function getRelatedArticles($id)
     {
         $relatedArticles = Articles::select('id', 'slug', 'title', 'excerpt', 'published_at', 'author', 'image_url', 'read_time')
             ->where('id', '!=', $id)
             ->orderBy('published_at', 'desc')
-            ->limit(3) // Ambil maksimal 3 artikel terkait
+            ->limit(3) 
             ->get();
 
         return response()->json($relatedArticles);
     }
 
-    // Mendapatkan artikel yang ditandai sebagai featured
     public function featuredArticle()
     {
         $featuredArticles = Articles::where('is_featured', true)
@@ -72,7 +69,6 @@ class ArticleController extends Controller
         return response()->json($featuredArticles);
     }
 
-    // Menyimpan artikel baru ke dalam database
     public function createArticle(Request $request)
     {
         // Validasi input
@@ -93,7 +89,7 @@ class ArticleController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'errors' => $validator->errors()
-            ], 400); // Mengembalikan error jika validasi gagal
+            ], 400); 
         }
 
         // Membuat artikel baru
@@ -102,6 +98,6 @@ class ArticleController extends Controller
         return response()->json([
             'message' => 'Article created successfully',
             'data' => $article
-        ], 201); // Mengembalikan artikel yang baru dibuat
+        ], 201); 
     }
 }
