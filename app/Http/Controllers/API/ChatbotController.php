@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -29,9 +30,21 @@ class ChatbotController extends Controller
                 'max_tokens' => 100,
             ]);
 
-            return response()->json($response->json());
+            if ($response->successful()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $response->json()
+                ], 200);
+            }
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Gagal mendapatkan respons dari OpenAI API',
+                'details' => $response->json()
+            ], $response->status());
         } catch (\Exception $e) {
             return response()->json([
+                'success' => false,
                 'error' => 'Terjadi kesalahan di server',
                 'message' => $e->getMessage()
             ], 500);

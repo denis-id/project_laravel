@@ -8,7 +8,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ProductVariantController;
-use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\API\ChatbotController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
